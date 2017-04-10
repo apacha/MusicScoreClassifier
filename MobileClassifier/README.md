@@ -1,0 +1,1 @@
+This folder contains the Android application that uses TensorFlow to detect music scores in the live camera feed.
