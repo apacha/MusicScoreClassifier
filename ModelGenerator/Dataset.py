@@ -3,9 +3,6 @@ import urllib.parse as urlparse
 import urllib.request as urllib2
 from abc import ABC, abstractmethod
 
-filename = download_file(url)
-print(filename)
-
 
 class Dataset(ABC):
     """ The abstract base class for the datasets used to train the model """
@@ -46,7 +43,7 @@ class Dataset(ABC):
         """ Starts the download of the dataset and extracts it into the directory specified in the constructor """
         pass
 
-    def download_file(self, url, desc=None):
+    def download_file(self, url, desc=None) -> str:
         u = urllib2.urlopen(url)
         scheme, netloc, path, query, fragment = urlparse.urlsplit(url)
         filename = os.path.basename(path)
@@ -81,4 +78,4 @@ class Dataset(ABC):
                 print(status, end="")
             print()
 
-        return filename
+        return os.path.abspath(filename)
