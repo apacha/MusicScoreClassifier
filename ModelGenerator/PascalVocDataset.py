@@ -1,4 +1,5 @@
 import os
+import shutil
 import tarfile
 
 from Dataset import Dataset
@@ -26,14 +27,17 @@ class PascalVocDataset(Dataset):
         if not os.path.exists(self.dataset_filename):
             self.download_file(self.url)
 
+        temp_directory = os.path.abspath(os.path.join(".", "VOCdevkit"))
         absolute_image_directory = os.path.abspath(os.path.join(".", "VOCdevkit", "VOC2006", "PNGImages"))
         self.clean_up_dataset_directories()
-        self.extract_dataset_into_temp_folder()
+        self.extract_dataset_into_temp_folder(temp_directory)
         self.split_images_into_training_and_validation_set(absolute_image_directory)
-        self.clean_up_temp_directory(os.path.abspath(os.path.join(".", "VOCdevkit")))
+        self.clean_up_temp_directory(temp_directory)
 
-    def extract_dataset_into_temp_folder(self):
+    def extract_dataset_into_temp_folder(self, temp_directory: str):
         print("Extracting Pascal VOC dataset into temp directory")
+        if os.path.exists(temp_directory):
+            shutil.rmtree(temp_directory)
         tar = tarfile.open(self.dataset_filename, "r:")
         tar.extractall()
         tar.close()

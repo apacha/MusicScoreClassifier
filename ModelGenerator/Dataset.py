@@ -35,6 +35,9 @@ class Dataset(ABC):
         self.number_of_validation_samples = 0
 
     def is_dataset_cached_on_disk(self) -> bool:
+        if not (os.path.exists(self.training_directory) and os.path.exists(self.validation_directory)):
+            return False
+
         if len(os.listdir(self.training_directory)) == self.number_of_training_samples \
                 and len(os.listdir(self.validation_directory)) == self.number_of_validation_samples:
             return True
@@ -72,8 +75,8 @@ class Dataset(ABC):
 
     def clean_up_dataset_directories(self):
         """ Removes the dataset directories. Removes corrupted data or has no effect if nothing is in there """
-        shutil.rmtree(self.training_directory)
-        shutil.rmtree(self.validation_directory)
+        shutil.rmtree(self.training_directory, ignore_errors=True)
+        shutil.rmtree(self.validation_directory, ignore_errors=True)
 
     def download_file(self, url, desc=None) -> str:
         u = urllib2.urlopen(url)
@@ -95,6 +98,8 @@ class Dataset(ABC):
 
             file_size_dl = 0
             block_sz = 8192
+            status_counter = 0
+            status_output_interval = 100
             while True:
                 buffer = u.read(block_sz)
                 if not buffer:
@@ -102,12 +107,15 @@ class Dataset(ABC):
 
                 file_size_dl += len(buffer)
                 f.write(buffer)
-
                 status = "{0:16}".format(file_size_dl)
                 if file_size:
                     status += "   [{0:6.2f}%]".format(file_size_dl * 100 / file_size)
                 status += chr(13)
-                print(status, end="")
+                status_counter += 1
+                if status_counter == status_output_interval:
+                    status_counter = 0
+                    print(status)
+                    # print(status, end="", flush=True) Does not work unfortunately
             print()
 
         return os.path.abspath(filename)
