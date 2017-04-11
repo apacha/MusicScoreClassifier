@@ -19,13 +19,20 @@ class PascalVocDataset(Dataset):
     def is_dataset_cached_on_disk(self) -> bool:
         pass
 
-    def download_dataset(self):
+    def download_and_extract_dataset(self):
         self.download_file(self.url)
         downloaded_archive = "voc2006_trainval.tar"
         tar = tarfile.open(downloaded_archive, "r:")
         tar.extractall()
         tar.close()
         pass
+
+
+
+dataset = PascalVocDataset("data")
+dataset.download_and_extract_dataset()
+dataset.is_dataset_cached_on_disk()
+
 
 extracted_archive = "VOCdevkit"
 png_images = os.path.join(extracted_archive, "VOC2006", "PNGImages")

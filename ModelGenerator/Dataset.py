@@ -39,7 +39,7 @@ class Dataset(ABC):
         pass
 
     @abstractmethod
-    def download_dataset(self):
+    def download_and_extract_dataset(self):
         """ Starts the download of the dataset and extracts it into the directory specified in the constructor """
         pass
 
