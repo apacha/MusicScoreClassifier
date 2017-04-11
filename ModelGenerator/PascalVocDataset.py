@@ -1,41 +1,39 @@
 import os
 import tarfile
 
-import shutil
-
 from Dataset import Dataset
 
 
 class PascalVocDataset(Dataset):
     """ This dataset contains the Pascal VOC 2006 challenge database which consists over 
-        5000 images of ten categories from http://host.robots.ox.ac.uk/pascal/VOC/databases.html#VOC2006 """
+        2618 images of ten categories from http://host.robots.ox.ac.uk/pascal/VOC/databases.html#VOC2006 """
 
     def __init__(self, directory: str):
         super().__init__(directory)
         self.url = "http://host.robots.ox.ac.uk/pascal/VOC/download/voc2006_trainval.tar"
+        self.dataset_filename = "voc2006_trainval.tar"
         self.training_directory = os.path.join(self.directory, "training", "other")
-        self.validation_directory = os.path.join(self.directory, "training", "other")
-
-    def is_dataset_cached_on_disk(self) -> bool:
-        pass
+        self.validation_directory = os.path.join(self.directory, "validation", "other")
+        self.dataset_size = 2618
+        self.number_of_training_samples = 2356
+        self.number_of_validation_samples = 262
 
     def download_and_extract_dataset(self):
-        self.download_file(self.url)
-        downloaded_archive = "voc2006_trainval.tar"
-        tar = tarfile.open(downloaded_archive, "r:")
+        if self.is_dataset_cached_on_disk():
+            print("Pascal VOC Dataset already downloaded and extracted")
+            return
+
+        if not os.path.exists(self.dataset_filename):
+            self.download_file(self.url)
+
+        absolute_image_directory = os.path.abspath(os.path.join(".", "VOCdevkit", "VOC2006", "PNGImages"))
+        self.clean_up_dataset_directories()
+        self.extract_dataset_into_temp_folder()
+        self.split_images_into_training_and_validation_set(absolute_image_directory)
+        self.clean_up_temp_directory(os.path.abspath(os.path.join(".", "VOCdevkit")))
+
+    def extract_dataset_into_temp_folder(self):
+        print("Extracting Pascal VOC dataset into temp directory")
+        tar = tarfile.open(self.dataset_filename, "r:")
         tar.extractall()
         tar.close()
-        pass
-
-
-
-dataset = PascalVocDataset("data")
-dataset.download_and_extract_dataset()
-dataset.is_dataset_cached_on_disk()
-
-
-extracted_archive = "VOCdevkit"
-png_images = os.path.join(extracted_archive, "VOC2006", "PNGImages")
-files = [os.path.abspath(os.path.join(png_images,f)) for f in os.listdir(png_images)]
-target_directory = os.path.join(directory)
-shutil.move()

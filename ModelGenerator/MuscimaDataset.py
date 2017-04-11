@@ -1,10 +1,8 @@
 import os
 import zipfile
-import numpy
 import shutil
 
 from Dataset import Dataset
-import random
 
 
 class MuscimaDataset(Dataset):
@@ -17,16 +15,13 @@ class MuscimaDataset(Dataset):
         self.dataset_filename = "CVCMUSCIMA_WI.zip"
         self.training_directory = os.path.join(self.directory, "training", "scores")
         self.validation_directory = os.path.join(self.directory, "validation", "scores")
-
-    def is_dataset_cached_on_disk(self) -> bool:
-        if len(os.listdir(self.training_directory)) == 900 and len(os.listdir(self.validation_directory)) == 100:
-            return True
-
-        return False
+        self.dataset_size = 1000
+        self.number_of_training_samples = 900
+        self.number_of_validation_samples = 100
 
     def download_and_extract_dataset(self):
         if self.is_dataset_cached_on_disk():
-            print("Dataset already downloaded and extracted")
+            print("Muscima Dataset already downloaded and extracted")
             return
 
         if not os.path.exists(self.dataset_filename):
@@ -37,15 +32,10 @@ class MuscimaDataset(Dataset):
         self.extract_dataset_into_temp_folder()
         self.copy_images_from_subdirectories_into_single_directory(absolute_image_directory)
         self.split_images_into_training_and_validation_set(absolute_image_directory)
-        self.clean_up_temp_directory()
-
-    def clean_up_dataset_directories(self):
-        """ Removes the dataset directories. Removes corrupted data or has no effect if nothing is in there """
-        shutil.rmtree(self.training_directory)
-        shutil.rmtree(self.validation_directory)
+        self.clean_up_temp_directory(os.path.abspath(os.path.join(".", "temp")))
 
     def extract_dataset_into_temp_folder(self):
-        print("Extracting dataset into temp directory")
+        print("Extracting Muscima dataset into temp directory")
         archive = zipfile.ZipFile(self.dataset_filename, "r")
         archive.extractall("temp")
         archive.close()
@@ -68,26 +58,3 @@ class MuscimaDataset(Dataset):
                 shutil.copyfile(image, destination_file)
 
         return absolute_image_directory
-
-    def split_images_into_training_and_validation_set(self, absolute_image_directory: str):
-        print("Creating training and validation sets")
-        os.makedirs(self.training_directory)
-        os.makedirs(self.validation_directory)
-        validation_sample_indices = self.get_indices_of_validation_set()
-        validation_files = numpy.array(os.listdir(absolute_image_directory))[validation_sample_indices]
-        [shutil.move(os.path.abspath(os.path.join(absolute_image_directory, image)), self.validation_directory)
-         for image in validation_files]
-
-        training_files = os.listdir(absolute_image_directory)
-        [shutil.move(os.path.abspath(os.path.join(absolute_image_directory, image)), self.training_directory)
-         for image in training_files]
-
-    def get_indices_of_validation_set(self, dataset_size: int = 1000, validation_size: int = 100) -> list:
-        """ Returns a reproducible set of random sample indices from the entire dataset population """
-        random.seed(0)
-        validation_sample_indices = random.sample(range(0, dataset_size), validation_size)
-        return validation_sample_indices
-
-    def clean_up_temp_directory(self):
-        print("Deleting temp directory")
-        shutil.rmtree(os.path.abspath(os.path.join(".", "temp")))

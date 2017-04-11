@@ -1,7 +1,11 @@
 import os
+import random
+import shutil
 import urllib.parse as urlparse
 import urllib.request as urllib2
 from abc import ABC, abstractmethod
+
+import numpy
 
 
 class Dataset(ABC):
@@ -10,9 +14,8 @@ class Dataset(ABC):
     def __init__(self,
                  directory: str):
         """
-        
-        :param directory: The root directory that will contain the data. Inside of this directory, the following
-         subdirectories will be created: 
+        :param directory: The root directory that will contain the data.
+        Inside of this directory, the following structure contains the data:
          
          directory
          |- training
@@ -25,23 +28,52 @@ class Dataset(ABC):
          
         """
         self.directory = os.path.abspath(directory)
-        if not os.path.exists(self.directory):
-            os.makedirs(self.directory)
-            os.makedirs(os.path.join(self.directory, "training"))
-            os.makedirs(os.path.join(self.directory, "training", "other"))
-            os.makedirs(os.path.join(self.directory, "training", "scores"))
-            os.makedirs(os.path.join(self.directory, "validation"))
-            os.makedirs(os.path.join(self.directory, "validation", "other"))
-            os.makedirs(os.path.join(self.directory, "validation", "scores"))
+        self.training_directory = os.path.join(self.directory, "training")
+        self.validation_directory = os.path.join(self.directory, "validation")
+        self.dataset_size = 0
+        self.number_of_training_samples = 0
+        self.number_of_validation_samples = 0
 
-    @abstractmethod
     def is_dataset_cached_on_disk(self) -> bool:
-        pass
+        if len(os.listdir(self.training_directory)) == self.number_of_training_samples \
+                and len(os.listdir(self.validation_directory)) == self.number_of_validation_samples:
+            return True
+
+        return False
 
     @abstractmethod
     def download_and_extract_dataset(self):
         """ Starts the download of the dataset and extracts it into the directory specified in the constructor """
         pass
+
+    def get_random_validation_sample_indices(self, dataset_size: int = 1000, validation_sample_size: int = 100) -> list:
+        """  Returns a reproducible set of random sample indices from the entire dataset population        """
+        random.seed(0)
+        validation_sample_indices = random.sample(range(0, dataset_size), validation_sample_size)
+        return validation_sample_indices
+
+    def split_images_into_training_and_validation_set(self, absolute_image_directory: str):
+        print("Creating training and validation sets")
+        os.makedirs(self.training_directory)
+        os.makedirs(self.validation_directory)
+        validation_sample_indices = self.get_random_validation_sample_indices(self.dataset_size,
+                                                                              self.number_of_validation_samples)
+        validation_files = numpy.array(os.listdir(absolute_image_directory))[validation_sample_indices]
+        [shutil.move(os.path.abspath(os.path.join(absolute_image_directory, image)), self.validation_directory)
+         for image in validation_files]
+
+        training_files = os.listdir(absolute_image_directory)
+        [shutil.move(os.path.abspath(os.path.join(absolute_image_directory, image)), self.training_directory)
+         for image in training_files]
+
+    def clean_up_temp_directory(self, temp_directory):
+        print("Deleting temp directory")
+        shutil.rmtree(temp_directory)
+
+    def clean_up_dataset_directories(self):
+        """ Removes the dataset directories. Removes corrupted data or has no effect if nothing is in there """
+        shutil.rmtree(self.training_directory)
+        shutil.rmtree(self.validation_directory)
 
     def download_file(self, url, desc=None) -> str:
         u = urllib2.urlopen(url)
