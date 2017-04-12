@@ -43,10 +43,10 @@ class MuscimaDataset(Dataset):
     @staticmethod
     def copy_images_from_subdirectories_into_single_directory(absolute_image_directory: str) -> str:
         os.makedirs(absolute_image_directory)
-        relative_path_to_writers = os.path.join(".", "temp", "CVCMUSCIMA_WI", "PNG_GT_GRAY")
+        relative_path_to_writers = os.path.join(".", "temp", "CVCMUSCIMA_WI", "PNG_GT_Gray")
         absolute_path_to_writers = os.path.abspath(relative_path_to_writers)
         writer_directories_without_mac_system_directory = [os.path.join(absolute_path_to_writers, f)
-                                                           for f in os.listdir(absolute_path_to_writers)
+                                                          for f in os.listdir(absolute_path_to_writers)
                                                            if f != ".DS_Store"]
         for writer_directory in writer_directories_without_mac_system_directory:
             images = [os.path.join(absolute_path_to_writers, writer_directory, f)
