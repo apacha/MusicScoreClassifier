@@ -45,7 +45,7 @@ class Dataset(ABC):
         return False
 
     @abstractmethod
-    def download_and_extract_dataset(self):
+    def download_and_extract_dataset(self, cleanup_data_directory = False):
         """ Starts the download of the dataset and extracts it into the directory specified in the constructor """
         pass
 
@@ -57,8 +57,8 @@ class Dataset(ABC):
 
     def split_images_into_training_and_validation_set(self, absolute_image_directory: str):
         print("Creating training and validation sets")
-        os.makedirs(self.training_directory)
-        os.makedirs(self.validation_directory)
+        os.makedirs(self.training_directory, exist_ok=True)
+        os.makedirs(self.validation_directory, exist_ok=True)
         validation_sample_indices = self.get_random_validation_sample_indices(self.dataset_size,
                                                                               self.number_of_validation_samples)
         validation_files = numpy.array(os.listdir(absolute_image_directory))[validation_sample_indices]

@@ -19,7 +19,7 @@ class PascalVocDataset(Dataset):
         self.number_of_training_samples = 2356
         self.number_of_validation_samples = 262
 
-    def download_and_extract_dataset(self):
+    def download_and_extract_dataset(self, cleanup_data_directory = False):
         if self.is_dataset_cached_on_disk():
             print("Pascal VOC Dataset already downloaded and extracted")
             return
@@ -29,7 +29,8 @@ class PascalVocDataset(Dataset):
 
         temp_directory = os.path.abspath(os.path.join(".", "VOCdevkit"))
         absolute_image_directory = os.path.abspath(os.path.join(".", "VOCdevkit", "VOC2006", "PNGImages"))
-        self.clean_up_dataset_directories()
+        if cleanup_data_directory:
+            self.clean_up_dataset_directories()
         self.extract_dataset_into_temp_folder(temp_directory)
         self.split_images_into_training_and_validation_set(absolute_image_directory)
         self.clean_up_temp_directory(temp_directory)

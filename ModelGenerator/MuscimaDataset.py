@@ -19,7 +19,7 @@ class MuscimaDataset(Dataset):
         self.number_of_training_samples = 900
         self.number_of_validation_samples = 100
 
-    def download_and_extract_dataset(self):
+    def download_and_extract_dataset(self, cleanup_data_directory = False):
         if self.is_dataset_cached_on_disk():
             print("Muscima Dataset already downloaded and extracted")
             return
@@ -28,7 +28,8 @@ class MuscimaDataset(Dataset):
             self.download_file(self.url)
 
         absolute_image_directory = os.path.abspath(os.path.join(".", "temp", "scores"))
-        self.clean_up_dataset_directories()
+        if cleanup_data_directory:
+            self.clean_up_dataset_directories()
         self.extract_dataset_into_temp_folder()
         self.copy_images_from_subdirectories_into_single_directory(absolute_image_directory)
         self.split_images_into_training_and_validation_set(absolute_image_directory)
@@ -42,7 +43,7 @@ class MuscimaDataset(Dataset):
 
     @staticmethod
     def copy_images_from_subdirectories_into_single_directory(absolute_image_directory: str) -> str:
-        os.makedirs(absolute_image_directory)
+        os.makedirs(absolute_image_directory, exist_ok=True)
         relative_path_to_writers = os.path.join(".", "temp", "CVCMUSCIMA_WI", "PNG_GT_Gray")
         absolute_path_to_writers = os.path.abspath(relative_path_to_writers)
         writer_directories_without_mac_system_directory = [os.path.join(absolute_path_to_writers, f)
