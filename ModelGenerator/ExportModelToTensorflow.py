@@ -57,11 +57,12 @@ graph_io.write_graph(sess.graph, export_path, input_graph_name)
 input_graph_path = os.path.join(export_path, input_graph_name)
 input_saver_def_path = ""
 input_binary = False
+output_node_names = "output_node/Softmax"
 restore_op_name = "save/restore_all"
 filename_tensor_name = "save/Const:0"
 output_graph_path = os.path.join(export_path, output_graph_name)
 clear_devices = False
 freeze_graph.freeze_graph(input_graph_path, input_saver_def_path,
-                          input_binary, checkpoint_path, "activation_5/Softmax",
+                          input_binary, checkpoint_path, output_node_names,
                           restore_op_name, filename_tensor_name,
                           output_graph_path, clear_devices, "")
