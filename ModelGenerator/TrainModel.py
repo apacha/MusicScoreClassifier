@@ -1,4 +1,5 @@
 import datetime
+import os
 from time import time
 
 import keras
@@ -6,11 +7,10 @@ import numpy as np
 from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
 
-from MuscimaDataset import MuscimaDataset
-from PascalVocDataset import PascalVocDataset
 from TrainingHistoryPlotter import TrainingHistoryPlotter
+from datasets.MuscimaDataset import MuscimaDataset
+from datasets.PascalVocDataset import PascalVocDataset
 from models.ConfigurationFactory import ConfigurationFactory
-import os
 
 print("Downloading and extracting datasets...")
 
@@ -32,7 +32,9 @@ img_rows, img_cols = training_configuration.data_shape[0], training_configuratio
 train_generator = ImageDataGenerator(horizontal_flip=True)
 training_data_generator = train_generator.flow_from_directory(os.path.join(dataset_directory, "training"),
                                                               target_size=(img_cols, img_rows),
-                                                              batch_size=training_configuration.training_minibatch_size)
+                                                              batch_size=training_configuration.training_minibatch_size,
+                                                              # save_to_dir="train_data"
+                                                              )
 training_steps_per_epoch = np.math.ceil(training_data_generator.samples / training_data_generator.batch_size)
 
 validation_generator = ImageDataGenerator()
@@ -78,7 +80,8 @@ print("Loss : ", evaluation[0])
 print("Accuracy : ", evaluation[1])
 print("Error : ", 1 - evaluation[1])
 
-TrainingHistoryPlotter.plot_history(history, "Results-{0}-{1}.png".format(training_configuration.name(), datetime.date.today()))
+TrainingHistoryPlotter.plot_history(history,
+                                    "Results-{0}-{1}.png".format(training_configuration.name(), datetime.date.today()))
 
 endTime = time()
 print("Execution time: %.1fs" % (endTime - start_time))

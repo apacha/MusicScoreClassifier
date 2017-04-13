@@ -45,7 +45,7 @@ class Dataset(ABC):
         return False
 
     @abstractmethod
-    def download_and_extract_dataset(self, cleanup_data_directory = False):
+    def download_and_extract_dataset(self, cleanup_data_directory=False):
         """ Starts the download of the dataset and extracts it into the directory specified in the constructor """
         pass
 
@@ -62,12 +62,12 @@ class Dataset(ABC):
         validation_sample_indices = self.get_random_validation_sample_indices(self.dataset_size,
                                                                               self.number_of_validation_samples)
         validation_files = numpy.array(os.listdir(absolute_image_directory))[validation_sample_indices]
-        [shutil.move(os.path.abspath(os.path.join(absolute_image_directory, image)), self.validation_directory)
-         for image in validation_files]
+        for image in validation_files:
+            shutil.copy(os.path.abspath(os.path.join(absolute_image_directory, image)), self.validation_directory)
 
         training_files = os.listdir(absolute_image_directory)
-        [shutil.move(os.path.abspath(os.path.join(absolute_image_directory, image)), self.training_directory)
-         for image in training_files]
+        for image in training_files:
+            shutil.copy(os.path.abspath(os.path.join(absolute_image_directory, image)), self.training_directory)
 
     def clean_up_temp_directory(self, temp_directory):
         print("Deleting temp directory")
