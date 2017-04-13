@@ -48,28 +48,20 @@ saver_write_version = saver_pb2.SaverDef.V2
 
 # We'll create an input graph that has a single variable containing 1.0,
 # and that then multiplies it by 2.
-with tensorflow.Graph().as_default():
-    variable_node = variables.Variable(1.0, name="variable_node")
-    output_node = tensorflow.multiply(variable_node, 2.0, name="output_node")
-    sess = session.Session()
-    init = variables.global_variables_initializer()
-    sess.run(init)
-    output = sess.run(output_node)
-    saver = tensorflow.train.Saver(write_version=saver_write_version)
-    checkpoint_path = saver.save(sess, export_path, global_step=0, latest_filename=checkpoint_state_name)
-    graph_io.write_graph(sess.graph, export_path, input_graph_name)
+saver = tensorflow.train.Saver(write_version=saver_write_version)
+checkpoint_path = saver.save(sess, export_path, global_step=0, latest_filename=checkpoint_state_name)
+graph_io.write_graph(sess.graph, export_path, input_graph_name)
 
 # We save out the graph to disk, and then call the const conversion
 # routine.
 input_graph_path = os.path.join(export_path, input_graph_name)
 input_saver_def_path = ""
 input_binary = False
-output_node_names = "output_node"
 restore_op_name = "save/restore_all"
 filename_tensor_name = "save/Const:0"
 output_graph_path = os.path.join(export_path, output_graph_name)
 clear_devices = False
 freeze_graph.freeze_graph(input_graph_path, input_saver_def_path,
-                          input_binary, checkpoint_path, output_node_names,
+                          input_binary, checkpoint_path, "activation_5/Softmax",
                           restore_op_name, filename_tensor_name,
                           output_graph_path, clear_devices, "")
