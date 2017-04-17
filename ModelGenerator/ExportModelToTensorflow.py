@@ -27,19 +27,20 @@ weights = model.get_weights()
 new_model = Sequential.from_config(config)
 new_model.set_weights(weights)
 
-export_path = os.path.abspath("simple-exported")  # where to save the exported graph
+export_path = os.path.abspath(os.path.join("export","simple"))  # where to save the exported graph
+os.makedirs(export_path)
 checkpoint_state_name = "checkpoint_state"
 export_version = 1  # version number (integer)
 saver = tensorflow.train.Saver(sharded=True, name=checkpoint_state_name)
 model_exporter = exporter.Exporter(saver)
 signature = exporter.classification_signature(input_tensor=model.input, scores_tensor=model.output)
 
-# Version 1 of exporter
-model_exporter.init(sess.graph.as_graph_def(), default_graph_signature=signature)
-model_exporter.export(export_path, tensorflow.constant(export_version), sess)
-
-# Version 2 of exporter
-tensorflow.train.write_graph(sess.graph.as_graph_def(), logdir=".", name="simple.pbtxt", as_text=True)
+# # Version 1 of exporter
+# model_exporter.init(sess.graph.as_graph_def(), default_graph_signature=signature)
+# model_exporter.export(export_path, tensorflow.constant(export_version), sess)
+#
+# # Version 2 of exporter
+# tensorflow.train.write_graph(sess.graph.as_graph_def(), logdir=".", name="simple.pbtxt", as_text=True)
 
 # Version 3 with Freezer from https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/tools/freeze_graph_test.py
 input_graph_name = "input_graph.pb"
