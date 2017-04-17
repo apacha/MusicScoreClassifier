@@ -2,7 +2,7 @@ import os
 import zipfile
 import shutil
 
-from Dataset import Dataset
+from datasets.Dataset import Dataset
 
 
 class MuscimaDataset(Dataset):

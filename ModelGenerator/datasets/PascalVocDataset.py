@@ -2,7 +2,7 @@ import os
 import shutil
 import tarfile
 
-from Dataset import Dataset
+from datasets.Dataset import Dataset
 
 
 class PascalVocDataset(Dataset):
