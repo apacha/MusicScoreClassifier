@@ -1,7 +1,8 @@
-# Mobile Music Score Classifier
+# Music Score Classifier
 
-The Mobile Music Score Classifier is a mobile Android application that takes the live camera-feed and classifies the image in real-time into either
-music scores, or something else and displays the result in the application.
+This repository is the model training part of the Mobile Music Score Classifier, which is a mobile Android application that takes the live camera-feed and classifies the image in real-time into either music scores, or something else and displays the result in the application.
+
+See https://github.com/apacha/MobileMusicScoreClassifier for the mobile Android application that uses the model trained with the scripts from this repository.
 
 # Building the application
 
