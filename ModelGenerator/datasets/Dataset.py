@@ -12,9 +12,9 @@ class Dataset(ABC):
     """ The abstract base class for the datasets used to train the model """
 
     def __init__(self,
-                 directory: str):
+                 destination_directory: str):
         """
-        :param directory: The root directory that will contain the data.
+        :param destination_directory: The root directory, into which the data will be placed.
         Inside of this directory, the following structure contains the data:
          
          directory
@@ -27,9 +27,9 @@ class Dataset(ABC):
          |   |- scores
          
         """
-        self.directory = os.path.abspath(directory)
-        self.training_directory = os.path.join(self.directory, "training")
-        self.validation_directory = os.path.join(self.directory, "validation")
+        self.destination_directory = os.path.abspath(destination_directory)
+        self.training_directory = os.path.join(self.destination_directory, "training")
+        self.validation_directory = os.path.join(self.destination_directory, "validation")
         self.dataset_size = 0
         self.number_of_training_samples = 0
         self.number_of_validation_samples = 0
@@ -55,19 +55,33 @@ class Dataset(ABC):
         validation_sample_indices = random.sample(range(0, dataset_size), validation_sample_size)
         return validation_sample_indices
 
-    def split_images_into_training_and_validation_set(self, absolute_image_directory: str):
+    def split_images_into_training_and_validation_set(self, absolute_path_to_images: str,
+                                                      destination_training_directory: str = None,
+                                                      destination_validation_directory: str = None,
+                                                      dataset_size: int = None,
+                                                      number_of_validation_samples: int = None):
         print("Creating training and validation sets")
-        os.makedirs(self.training_directory, exist_ok=True)
-        os.makedirs(self.validation_directory, exist_ok=True)
-        validation_sample_indices = self.get_random_validation_sample_indices(self.dataset_size,
-                                                                              self.number_of_validation_samples)
-        validation_files = numpy.array(os.listdir(absolute_image_directory))[validation_sample_indices]
-        for image in validation_files:
-            shutil.copy(os.path.abspath(os.path.join(absolute_image_directory, image)), self.validation_directory)
+        if destination_training_directory is None:
+            destination_training_directory = self.training_directory
+        if destination_validation_directory is None:
+            destination_validation_directory = self.validation_directory
+        if dataset_size is None:
+            dataset_size = self.dataset_size
+        if number_of_validation_samples is None:
+            number_of_validation_samples = self.number_of_validation_samples
 
-        training_files = os.listdir(absolute_image_directory)
+        os.makedirs(destination_training_directory, exist_ok=True)
+        os.makedirs(destination_validation_directory, exist_ok=True)
+        validation_sample_indices = self.get_random_validation_sample_indices(dataset_size,
+                                                                              number_of_validation_samples)
+        validation_files = numpy.array(os.listdir(absolute_path_to_images))[validation_sample_indices]
+        for image in validation_files:
+            shutil.copy(os.path.abspath(os.path.join(absolute_path_to_images, image)),
+                        destination_validation_directory)
+
+        training_files = os.listdir(absolute_path_to_images)
         for image in training_files:
-            shutil.copy(os.path.abspath(os.path.join(absolute_image_directory, image)), self.training_directory)
+            shutil.copy(os.path.abspath(os.path.join(absolute_path_to_images, image)), destination_training_directory)
 
     def clean_up_temp_directory(self, temp_directory):
         print("Deleting temp directory")

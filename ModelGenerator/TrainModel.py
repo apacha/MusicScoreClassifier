@@ -8,6 +8,7 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
 
 from TrainingHistoryPlotter import TrainingHistoryPlotter
+from datasets.AdditionalDataset import AdditionalDataset
 from datasets.MuscimaDataset import MuscimaDataset
 from datasets.PascalVocDataset import PascalVocDataset
 from models.ConfigurationFactory import ConfigurationFactory
@@ -22,6 +23,9 @@ pascalVocDataset.download_and_extract_dataset()
 muscimaDataset = MuscimaDataset(dataset_directory)
 muscimaDataset.download_and_extract_dataset()
 
+additionalDataset = AdditionalDataset(dataset_directory)
+additionalDataset.download_and_extract_dataset()
+
 print("Training on datasets...")
 start_time = time()
 
@@ -29,7 +33,7 @@ model_name = "simple"
 training_configuration = ConfigurationFactory.get_configuration_by_name(model_name)
 img_rows, img_cols = training_configuration.data_shape[0], training_configuration.data_shape[1]
 
-train_generator = ImageDataGenerator(horizontal_flip=True)
+train_generator = ImageDataGenerator(horizontal_flip=True, rotation_range=10)
 training_data_generator = train_generator.flow_from_directory(os.path.join(dataset_directory, "training"),
                                                               target_size=(img_cols, img_rows),
                                                               batch_size=training_configuration.training_minibatch_size,

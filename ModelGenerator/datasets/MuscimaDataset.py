@@ -9,12 +9,12 @@ class MuscimaDataset(Dataset):
     """ This dataset contains the Musicma Handwritten music scores database which consists of 
         1000 handwritten music scores from http://www.cvc.uab.es/cvcmuscima/index_database.html """
 
-    def __init__(self, directory: str):
-        super().__init__(directory)
+    def __init__(self, destination_directory: str):
+        super().__init__(destination_directory)
         self.url = "http://www.cvc.uab.es/cvcmuscima/CVCMUSCIMA_WI.zip"
         self.dataset_filename = "CVCMUSCIMA_WI.zip"
-        self.training_directory = os.path.join(self.directory, "training", "scores")
-        self.validation_directory = os.path.join(self.directory, "validation", "scores")
+        self.training_directory = os.path.join(self.destination_directory, "training", "scores")
+        self.validation_directory = os.path.join(self.destination_directory, "validation", "scores")
         self.dataset_size = 1000
         self.number_of_training_samples = 900
         self.number_of_validation_samples = 100

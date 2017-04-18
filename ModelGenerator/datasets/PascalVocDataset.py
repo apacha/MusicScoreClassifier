@@ -2,6 +2,8 @@ import os
 import shutil
 import tarfile
 
+import numpy
+
 from datasets.Dataset import Dataset
 
 
@@ -9,17 +11,17 @@ class PascalVocDataset(Dataset):
     """ This dataset contains the Pascal VOC 2006 challenge database which consists over 
         2618 images of ten categories from http://host.robots.ox.ac.uk/pascal/VOC/databases.html#VOC2006 """
 
-    def __init__(self, directory: str):
-        super().__init__(directory)
+    def __init__(self, destination_directory: str):
+        super().__init__(destination_directory)
         self.url = "http://host.robots.ox.ac.uk/pascal/VOC/download/voc2006_trainval.tar"
         self.dataset_filename = "voc2006_trainval.tar"
-        self.training_directory = os.path.join(self.directory, "training", "other")
-        self.validation_directory = os.path.join(self.directory, "validation", "other")
+        self.training_directory = os.path.join(self.destination_directory, "training", "other")
+        self.validation_directory = os.path.join(self.destination_directory, "validation", "other")
         self.dataset_size = 2618
-        self.number_of_training_samples = 2356
-        self.number_of_validation_samples = 262
+        self.number_of_training_samples = int(numpy.math.ceil(self.dataset_size * 0.9))
+        self.number_of_validation_samples = self.dataset_size - self.number_of_training_samples
 
-    def download_and_extract_dataset(self, cleanup_data_directory = False):
+    def download_and_extract_dataset(self, cleanup_data_directory=False):
         if self.is_dataset_cached_on_disk():
             print("Pascal VOC Dataset already downloaded and extracted")
             return
