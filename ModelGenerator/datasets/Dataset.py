@@ -49,11 +49,14 @@ class Dataset(ABC):
         """ Starts the download of the dataset and extracts it into the directory specified in the constructor """
         pass
 
-    def get_random_validation_sample_indices(self, dataset_size: int = 1000, validation_sample_size: int = 100) -> list:
+    def get_random_training_and_validation_sample_indices(self, dataset_size: int = 1000,
+                                                          validation_sample_size: int = 100) -> list:
         """  Returns a reproducible set of random sample indices from the entire dataset population        """
         random.seed(0)
-        validation_sample_indices = random.sample(range(0, dataset_size), validation_sample_size)
-        return validation_sample_indices
+        all_indices = range(0, dataset_size)
+        validation_sample_indices = random.sample(all_indices, validation_sample_size)
+        training_sample_indices = list(set(all_indices) - set(validation_sample_indices))
+        return training_sample_indices, validation_sample_indices
 
     def split_images_into_training_and_validation_set(self, absolute_path_to_images: str,
                                                       destination_training_directory: str = None,
@@ -72,14 +75,14 @@ class Dataset(ABC):
 
         os.makedirs(destination_training_directory, exist_ok=True)
         os.makedirs(destination_validation_directory, exist_ok=True)
-        validation_sample_indices = self.get_random_validation_sample_indices(dataset_size,
-                                                                              number_of_validation_samples)
+        training_sample_indices, validation_sample_indices = \
+            self.get_random_training_and_validation_sample_indices(dataset_size, number_of_validation_samples)
         validation_files = numpy.array(os.listdir(absolute_path_to_images))[validation_sample_indices]
         for image in validation_files:
             shutil.copy(os.path.abspath(os.path.join(absolute_path_to_images, image)),
                         destination_validation_directory)
 
-        training_files = os.listdir(absolute_path_to_images)
+        training_files = numpy.array(os.listdir(absolute_path_to_images))[training_sample_indices]
         for image in training_files:
             shutil.copy(os.path.abspath(os.path.join(absolute_path_to_images, image)), destination_training_directory)
 
