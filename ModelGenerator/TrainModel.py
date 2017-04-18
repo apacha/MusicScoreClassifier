@@ -29,7 +29,7 @@ additionalDataset.download_and_extract_dataset()
 print("Training on datasets...")
 start_time = time()
 
-model_name = "simple"
+model_name = "simple3"
 training_configuration = ConfigurationFactory.get_configuration_by_name(model_name)
 img_rows, img_cols = training_configuration.data_shape[0], training_configuration.data_shape[1]
 number_of_pixels_shift = training_configuration.number_of_pixel_shift

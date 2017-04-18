@@ -1,4 +1,5 @@
-from keras.layers import Convolution2D, Activation, MaxPooling2D, Flatten, Dense, Conv2D, BatchNormalization, AveragePooling2D
+from keras.layers import Convolution2D, Activation, MaxPooling2D, Flatten, Dense, Conv2D, BatchNormalization, \
+    AveragePooling2D, Dropout
 from keras.models import Sequential
 from keras.optimizers import SGD
 from keras.regularizers import l2
@@ -8,6 +9,10 @@ from models.TrainingConfiguration import TrainingConfiguration
 
 class SimpleConfiguration3(TrainingConfiguration):
     """ A rudimentary configuration for starting """
+
+    def __init__(self):
+        super().__init__()
+        self.number_of_epochs_before_reducing_learning_rate = 5
 
     def classifier(self) -> Sequential:
         """ Returns the classifier of this configuration """
@@ -38,6 +43,7 @@ class SimpleConfiguration3(TrainingConfiguration):
         classifier.add(MaxPooling2D())
 
         classifier.add(Flatten())  # Flatten
+        classifier.add(Dropout(0.5))
         classifier.add(Dense(units=2, kernel_regularizer=l2(self.weight_decay)))
         classifier.add(Activation('softmax'))
 
