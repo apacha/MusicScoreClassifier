@@ -32,8 +32,13 @@ start_time = time()
 model_name = "simple"
 training_configuration = ConfigurationFactory.get_configuration_by_name(model_name)
 img_rows, img_cols = training_configuration.data_shape[0], training_configuration.data_shape[1]
+number_of_pixels_shift = training_configuration.number_of_pixel_shift
 
-train_generator = ImageDataGenerator(horizontal_flip=True, rotation_range=10)
+train_generator = ImageDataGenerator(horizontal_flip=True,
+                                     rotation_range=10,
+                                     width_shift_range=number_of_pixels_shift / img_rows,
+                                     height_shift_range=number_of_pixels_shift / img_cols,
+                                     )
 training_data_generator = train_generator.flow_from_directory(os.path.join(dataset_directory, "training"),
                                                               target_size=(img_cols, img_rows),
                                                               batch_size=training_configuration.training_minibatch_size,
