@@ -9,6 +9,7 @@ from keras.preprocessing.image import ImageDataGenerator
 
 from TrainingHistoryPlotter import TrainingHistoryPlotter
 from datasets.AdditionalDataset import AdditionalDataset
+from datasets.DatasetSplitter import DatasetSplitter
 from datasets.MuscimaDataset import MuscimaDataset
 from datasets.PascalVocDataset import PascalVocDataset
 from models.ConfigurationFactory import ConfigurationFactory
@@ -16,15 +17,17 @@ from models.ConfigurationFactory import ConfigurationFactory
 print("Downloading and extracting datasets...")
 
 dataset_directory = "data"
+additional_dataset_directory = "C:\\Users\\Alex\\Dropbox\\Doktorat\\MusicScoresDataset"
 
 pascalVocDataset = PascalVocDataset(dataset_directory)
 pascalVocDataset.download_and_extract_dataset()
-
 muscimaDataset = MuscimaDataset(dataset_directory)
 muscimaDataset.download_and_extract_dataset()
-
-additionalDataset = AdditionalDataset(dataset_directory)
+additionalDataset = AdditionalDataset(dataset_directory, additional_dataset_directory)
 additionalDataset.download_and_extract_dataset()
+
+dataset_splitter = DatasetSplitter(dataset_directory, dataset_directory)
+dataset_splitter.split_images_into_training_validation_and_test_set()
 
 print("Training on datasets...")
 start_time = time()
@@ -52,6 +55,12 @@ validation_data_generator = validation_generator.flow_from_directory(os.path.joi
                                                                      batch_size=training_configuration.training_minibatch_size)
 validation_steps_per_epoch = np.math.ceil(validation_data_generator.samples / validation_data_generator.batch_size)
 
+test_generator = ImageDataGenerator()
+test_data_generator = test_generator.flow_from_directory(os.path.join(dataset_directory, "test"),
+                                                         target_size=(img_cols, img_rows),
+                                                         batch_size=training_configuration.training_minibatch_size)
+test_steps_per_epoch = np.math.ceil(test_data_generator.samples / test_data_generator.batch_size)
+
 model = training_configuration.classifier()
 model.summary()
 
@@ -78,11 +87,10 @@ history = model.fit_generator(
     validation_steps=validation_steps_per_epoch
 )
 
-print("Loading best model from check-point and testing...")
+print("Loading best model from check-point and testing on test-set...")
 best_model = keras.models.load_model(best_model_path)
 
-validation_data_generator.reset()
-evaluation = best_model.evaluate_generator(validation_data_generator, steps=validation_steps_per_epoch)
+evaluation = best_model.evaluate_generator(test_data_generator, steps=test_steps_per_epoch)
 
 print(best_model.metrics_names)
 print("Loss : ", evaluation[0])

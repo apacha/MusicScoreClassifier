@@ -13,30 +13,19 @@ class MuscimaDataset(Dataset):
         super().__init__(destination_directory)
         self.url = "http://www.cvc.uab.es/cvcmuscima/CVCMUSCIMA_WI.zip"
         self.dataset_filename = "CVCMUSCIMA_WI.zip"
-        self.training_directory = os.path.join(self.destination_directory, "training", "scores")
-        self.validation_directory = os.path.join(self.destination_directory, "validation", "scores")
-        self.dataset_size = 1000
-        self.number_of_training_samples = 900
-        self.number_of_validation_samples = 100
 
-    def download_and_extract_dataset(self, cleanup_data_directory = False):
-        if self.is_dataset_cached_on_disk():
-            print("Muscima Dataset already downloaded and extracted")
-            return
-
+    def download_and_extract_dataset(self):
         if not os.path.exists(self.dataset_filename):
+            print("Downloading Muscima Dataset...")
             self.download_file(self.url)
 
-        absolute_image_directory = os.path.abspath(os.path.join(".", "temp", "scores"))
-        if cleanup_data_directory:
-            self.clean_up_dataset_directories()
+        print("Extracting Muscima Dataset...")
         self.extract_dataset_into_temp_folder()
+        absolute_image_directory = os.path.abspath(os.path.join(self.destination_directory, "scores"))
         self.copy_images_from_subdirectories_into_single_directory(absolute_image_directory)
-        self.split_images_into_training_and_validation_set(absolute_image_directory)
         self.clean_up_temp_directory(os.path.abspath(os.path.join(".", "temp")))
 
     def extract_dataset_into_temp_folder(self):
-        print("Extracting Muscima dataset into temp directory")
         archive = zipfile.ZipFile(self.dataset_filename, "r")
         archive.extractall("temp")
         archive.close()
@@ -59,3 +48,6 @@ class MuscimaDataset(Dataset):
                 shutil.copyfile(image, destination_file)
 
         return absolute_image_directory
+
+# dataset = MuscimaDataset('C:\\Users\\Alex\\Repositories\\MusicScoreClassifier\\ModelGenerator\\data')
+# dataset.download_and_extract_dataset()
