@@ -2,9 +2,8 @@ import datetime
 import os
 from time import time
 
-import keras
 import numpy as np
-from keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
+from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.preprocessing.image import ImageDataGenerator
 
 from TrainingHistoryPlotter import TrainingHistoryPlotter
@@ -79,16 +78,21 @@ learning_rate_reduction = ReduceLROnPlateau(monitor='val_acc',
                                             factor=training_configuration.learning_rate_reduction_factor,
                                             min_lr=training_configuration.minimum_learning_rate)
 history = model.fit_generator(
-    generator=training_data_generator,
-    steps_per_epoch=training_steps_per_epoch,
-    epochs=training_configuration.number_of_epochs,
-    callbacks=[model_checkpoint, early_stop, learning_rate_reduction],
-    validation_data=validation_data_generator,
-    validation_steps=validation_steps_per_epoch
+        generator=training_data_generator,
+        steps_per_epoch=training_steps_per_epoch,
+        epochs=training_configuration.number_of_epochs,
+        callbacks=[model_checkpoint, early_stop, learning_rate_reduction],
+        validation_data=validation_data_generator,
+        validation_steps=validation_steps_per_epoch
 )
 
-print("Loading best model from check-point and testing on test-set...")
-best_model = keras.models.load_model(best_model_path)
+print("Loading best model from check-point and testing...")
+# For some models, loading the model directly does not work, but loading the weights does
+# (see https://github.com/fchollet/keras/issues/4044#issuecomment-254921595)
+# best_model = keras.models.load_model(best_model_path)
+best_model = training_configuration.classifier()
+best_model.load_weights(best_model_path)
+
 
 evaluation = best_model.evaluate_generator(test_data_generator, steps=test_steps_per_epoch)
 
