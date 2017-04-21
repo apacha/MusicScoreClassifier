@@ -5,7 +5,7 @@ This repository is the model training part of the Mobile Music Score Classifier,
 See https://github.com/apacha/MobileMusicScoreClassifier for the mobile Android application that uses the model trained with the scripts from this repository.
 
 # Building the application
-
+The application contains scripts for automatically downloading and preparing the datasets used for training of the convolutional neural network. The additional dataset that was created for this project can be downloaded from [here](https://owncloud.tuwien.ac.at/index.php/s/JHzEMlwCSw8lTFp)
 
 ## Model Generator
 The Model generator is a python script that downloads the MUSCIMA dataset (handwritten music scores) and the Pascal VOC dataset (general purpose images), extracts them and uses them as two distinct sets of images for training a Convolutional Neural Network with Keras and Tensorflow.
