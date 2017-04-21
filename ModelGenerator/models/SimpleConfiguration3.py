@@ -18,7 +18,7 @@ class SimpleConfiguration3(TrainingConfiguration):
         classifier = Sequential()
 
         self.add_convolution(classifier, 16, 3, self.weight_decay, input_shape=self.data_shape)
-        self.add_convolution(classifier, 16, 3, self.weight_decay, input_shape=self.data_shape)
+        self.add_convolution(classifier, 16, 3, self.weight_decay)
         classifier.add(MaxPooling2D())
 
         self.add_convolution(classifier, 32, 3, self.weight_decay)
