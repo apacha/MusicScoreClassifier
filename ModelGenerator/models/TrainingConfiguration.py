@@ -5,11 +5,11 @@ from keras.engine import Model
 
 class TrainingConfiguration(ABC):
     def __init__(self,
-                 data_shape: tuple = (128, 128, 3),
+                 data_shape: tuple = (256, 256, 3),
                  number_of_epochs: int = 200,
                  number_of_epochs_before_early_stopping: int = 10,
                  number_of_epochs_before_reducing_learning_rate: int = 8,
-                 training_minibatch_size: int = 32,
+                 training_minibatch_size: int = 16,
                  initialization: str = "he_normal",
                  learning_rate: float = 0.001,
                  learning_rate_reduction_factor: float = 0.5,
