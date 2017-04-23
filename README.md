@@ -1,19 +1,25 @@
 # Music Score Classifier
 
 This repository is the model training part of the Mobile Music Score Classifier, which is a mobile Android application that takes the live camera-feed and classifies the image in real-time into either music scores, or something else and displays the result in the application.
+It is part of a set of three tools:
 
-See https://github.com/apacha/MobileMusicScoreClassifier for the mobile Android application that uses the model trained with the scripts from this repository.
+* **Model Trainer**: https://github.com/apacha/MusicScoreClassifier for the training of a classifier that uses Deep Learning to train a model to automatically classify images into scores or something else.
+* **Mobile App**: https://github.com/apacha/MobileMusicScoreClassifier for the mobile Android application that uses a trained model to perform real-time classification on a mobile device.
+* **Manual Classifier**: https://github.com/apacha/ManualMusicScoreClassifier for a small C#/WPF application that can be used manually classify images, used during evaluation.
+
+|Model Trainer|Mobile App|Manual Classifier|
+|:----:|:-----:|:-----:|
+|[![Build Status](https://travis-ci.org/apacha/MusicScoreClassifier.svg?branch=master)](https://travis-ci.org/apacha/MusicScoreClassifier)|[![Build Status](https://travis-ci.org/apacha/MobileMusicScoreClassifier.svg?branch=master)](https://travis-ci.org/apacha/MobileMusicScoreClassifier)|[![Build status](https://ci.appveyor.com/api/projects/status/4715vyioa98eje0k?svg=true)](https://ci.appveyor.com/project/apacha/manualmusicscoreclassifier)|
+
 
 # Building the application
 The application contains scripts for automatically downloading and preparing the datasets used for training of the convolutional neural network. The additional dataset that was created for this project can be downloaded from [here](https://owncloud.tuwien.ac.at/index.php/s/JHzEMlwCSw8lTFp)
-
-[![Build Status](https://travis-ci.org/apacha/MusicScoreClassifier.svg?branch=master)](https://travis-ci.org/apacha/MusicScoreClassifier)
 
 ## Model Generator
 The Model generator is a python script that downloads the MUSCIMA dataset (handwritten music scores) and the Pascal VOC dataset (general purpose images), extracts them and uses them as two distinct sets of images for training a Convolutional Neural Network with Keras and Tensorflow.
 
 ## Authors
-Alexander Pacha, Technical University of Vienna
+Alexander Pacha, TU Wien
 
 ## License
 
