@@ -36,7 +36,9 @@ install:
   - pip install -r ModelGenerator/requirements.txt
 
 script:
-  - pytest
+  - pytest --cov=./
+
+
   ## run keras backend init to initialize backend config
   #- python -c "import keras.backend"
   ## create dataset directory to avoid concurrent directory creation at runtime
@@ -51,3 +53,6 @@ script:
   #  else
   #     PYTHONPATH=$PWD:$PYTHONPATH py.test tests/ --ignore=tests/integration_tests --cov=keras tests/ --cov-fail-under 78 --cov-report term-missing;
   #  fi
+
+after_success:
+  - codecov
