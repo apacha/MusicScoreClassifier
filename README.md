@@ -10,6 +10,8 @@ It is part of a set of three tools:
 |Model Trainer|Mobile App|Manual Classifier|
 |:----:|:-----:|:-----:|
 |[![Build Status](https://travis-ci.org/apacha/MusicScoreClassifier.svg?branch=master)](https://travis-ci.org/apacha/MusicScoreClassifier)|[![Build Status](https://travis-ci.org/apacha/MobileMusicScoreClassifier.svg?branch=master)](https://travis-ci.org/apacha/MobileMusicScoreClassifier)|[![Build status](https://ci.appveyor.com/api/projects/status/4715vyioa98eje0k?svg=true)](https://ci.appveyor.com/project/apacha/manualmusicscoreclassifier)|
+|[![codecov](https://codecov.io/gh/apacha/MusicScoreClassifier/branch/master/graph/badge.svg)](https://codecov.io/gh/apacha/MusicScoreClassifier)|||
+
 
 
 # Building the application
