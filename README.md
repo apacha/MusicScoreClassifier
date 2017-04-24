@@ -15,13 +15,24 @@ It is part of a set of three tools:
 # Building the application
 The application contains scripts for automatically downloading and preparing the datasets used for training of the convolutional neural network. The additional dataset that was created for this project can be downloaded from [here](https://owncloud.tuwien.ac.at/index.php/s/JHzEMlwCSw8lTFp)
 
+## Used tools ##
+- Python 3.5/3.6
+- PyCharm
+- Keras
+- Tensorflow
+
+## Installation ##
+In order to get printing to run correctly, install GraphViz on Windows via http://www.graphviz.org/Download_windows.php and add /bin to the PATH or run `sudo apt-get install graphviz` on Ubuntu (see https://github.com/fchollet/keras/issues/3210)
+
 ## Model Generator
 The Model generator is a python script that downloads the MUSCIMA dataset (handwritten music scores) and the Pascal VOC dataset (general purpose images), extracts them and uses them as two distinct sets of images for training a Convolutional Neural Network with Keras and Tensorflow.
 
-## Authors
+The primary script for training is `train.py` which downloads the required data and performs the training.
+
+# Authors
 Alexander Pacha, TU Wien
 
-## License
+# License
 
 Published under MIT License,
 
