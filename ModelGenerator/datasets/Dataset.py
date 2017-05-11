@@ -28,14 +28,16 @@ class Dataset(ABC):
         print("Deleting temporary directory {0}".format(temp_directory))
         shutil.rmtree(temp_directory)
 
-    def download_file(self, url, desc=None) -> str:
+    def download_file(self, url, destination_filename=None) -> str:
         u = urllib2.urlopen(url)
         scheme, netloc, path, query, fragment = urlparse.urlsplit(url)
         filename = os.path.basename(path)
         if not filename:
             filename = 'downloaded.file'
-        if desc:
-            filename = os.path.join(desc, filename)
+        if destination_filename:
+            filename = destination_filename
+
+        filename = os.path.abspath(filename)
 
         with open(filename, 'wb') as f:
             meta = u.info()
@@ -44,7 +46,7 @@ class Dataset(ABC):
             file_size = None
             if meta_length:
                 file_size = int(meta_length[0])
-            print("Downloading: {0} Bytes: {1}".format(url, file_size))
+            print("Downloading: {0} Bytes: {1} into {2}".format(url, file_size, filename))
 
             file_size_dl = 0
             block_sz = 8192
@@ -68,4 +70,4 @@ class Dataset(ABC):
                     # print(status, end="", flush=True) Does not work unfortunately
             print()
 
-        return os.path.abspath(filename)
+        return filename

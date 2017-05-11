@@ -2,6 +2,8 @@ import os
 import shutil
 import tarfile
 
+import argparse
+
 from datasets.Dataset import Dataset
 
 
@@ -44,5 +46,16 @@ class PascalVocDataset(Dataset):
         for image in [os.path.join(absolute_image_directory, name) for name in os.listdir(absolute_image_directory)]:
             shutil.copy(image, image_destination_directory)
 
-# datasest = PascalVocDataset('C:\\Users\\Alex\\Repositories\\MusicScoreClassifier\\ModelGenerator\\data')
-# datasest.download_and_extract_dataset()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+            "--dataset_directory",
+            type=str,
+            default="../data",
+            help="The directory, that is used for storing the images during training")
+
+    flags, unparsed = parser.parse_known_args()
+
+    datasest = PascalVocDataset(flags.dataset_directory)
+    datasest.download_and_extract_dataset()

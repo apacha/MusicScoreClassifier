@@ -2,6 +2,8 @@ import os
 import zipfile
 import shutil
 
+import argparse
+
 from datasets.Dataset import Dataset
 
 
@@ -36,7 +38,7 @@ class MuscimaDataset(Dataset):
         relative_path_to_writers = os.path.join(".", "temp", "CVCMUSCIMA_WI", "PNG_GT_Gray")
         absolute_path_to_writers = os.path.abspath(relative_path_to_writers)
         writer_directories_without_mac_system_directory = [os.path.join(absolute_path_to_writers, f)
-                                                          for f in os.listdir(absolute_path_to_writers)
+                                                           for f in os.listdir(absolute_path_to_writers)
                                                            if f != ".DS_Store"]
         for writer_directory in writer_directories_without_mac_system_directory:
             images = [os.path.join(absolute_path_to_writers, writer_directory, f)
@@ -49,5 +51,16 @@ class MuscimaDataset(Dataset):
 
         return absolute_image_directory
 
-# dataset = MuscimaDataset('C:\\Users\\Alex\\Repositories\\MusicScoreClassifier\\ModelGenerator\\data')
-# dataset.download_and_extract_dataset()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+            "--dataset_directory",
+            type=str,
+            default="../data",
+            help="The directory, that is used for storing the images during training")
+
+    flags, unparsed = parser.parse_known_args()
+
+    datasest = MuscimaDataset(flags.dataset_directory)
+    datasest.download_and_extract_dataset()
