@@ -1,7 +1,6 @@
 from models import TrainingConfiguration
 from models.SimpleConfiguration import SimpleConfiguration
-from models.SimpleConfiguration2 import SimpleConfiguration2
-from models.SimpleConfiguration3 import SimpleConfiguration3
+from models.VggConfiguration import VggConfiguration
 
 
 class ConfigurationFactory:
@@ -9,8 +8,7 @@ class ConfigurationFactory:
     def get_configuration_by_name(name: str = "simple") -> TrainingConfiguration:
         configurations = []
         configurations.append(SimpleConfiguration())
-        configurations.append(SimpleConfiguration2())
-        configurations.append(SimpleConfiguration3())
+        configurations.append(VggConfiguration())
 
         for i in range(len(configurations)):
             if configurations[i].name() == name:
