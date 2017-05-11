@@ -61,15 +61,11 @@ the model description and the actual weights. To get both of them into one file,
 If you are just interested in the additional dataset that was created for this project,
 it can be downloaded from [here](https://owncloud.tuwien.ac.at/index.php/s/JHzEMlwCSw8lTFp).
 
-
-# Authors
-Alexander Pacha, [TU Wien](https://www.ims.tuwien.ac.at/people/alexander-pacha)
-
 # License
 
 Published under MIT License,
 
-Copyright (c) 2017 Alexander Pacha
+Copyright (c) 2017 [Alexander Pacha](http://my-it.at), [TU Wien](https://www.ims.tuwien.ac.at/people/alexander-pacha)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
