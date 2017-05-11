@@ -8,3 +8,5 @@
 /export/
 /results/
 /MusicScoreClassificationDataset.zip
+/output_graph.pb
+/vgg.h5
