@@ -1,6 +1,6 @@
 # Music Score Classifier
 
-This repository is the model training part of the Mobile Music Score Classifier, which is a mobile Android application that takes the live camera-feed and classifies the image in real-time into either music scores, or something else and displays the result in the application.
+This repository is the model trainer part of the Mobile Music Score Classifier, which is a mobile Android application that takes the live camera-feed and classifies the image in real-time into either music scores, or something else and displays the result in the application.
 It is part of a set of three tools:
 
 * **Model Trainer**: https://github.com/apacha/MusicScoreClassifier for the training of a classifier that uses Deep Learning to train a model to automatically classify images into scores or something else.
@@ -14,25 +14,56 @@ It is part of a set of three tools:
 
 
 
-# Building the application
-The application contains scripts for automatically downloading and preparing the datasets used for training of the convolutional neural network. The additional dataset that was created for this project can be downloaded from [here](https://owncloud.tuwien.ac.at/index.php/s/JHzEMlwCSw8lTFp)
+# Running the application
+This repository contains several scripts that can be used independently of each other. 
+Before running them, make sure that you have the necessary requirements installed. 
 
-## Used tools ##
-- Python 3.5/3.6
-- PyCharm
-- Keras
-- Tensorflow
+## Requirements
 
-## Installation ##
-In order to get printing to run correctly, install GraphViz on Windows via http://www.graphviz.org/Download_windows.php and add /bin to the PATH or run `sudo apt-get install graphviz` on Ubuntu (see https://github.com/fchollet/keras/issues/3210)
+- Python 3.5 (3.6 can be tricky, as of May 2017 [tensorflow does not yet officially support it](https://github.com/tensorflow/tensorflow/issues/6999))
+- Keras 2.0.4
+- Tensorflow 1.1.0 (or optionally tensorflow-gpu 1.1.0)
 
-## Model Generator
-The Model generator is a python script that downloads the MUSCIMA dataset (handwritten music scores) and the Pascal VOC dataset (general purpose images), extracts them and uses them as two distinct sets of images for training a Convolutional Neural Network with Keras and Tensorflow.
+Optional: If you want to print the graph of the model being trained, install GraphViz on Windows via http://www.graphviz.org/Download_windows.php and add /bin to the PATH or run `sudo apt-get install graphviz` on Ubuntu (see https://github.com/fchollet/keras/issues/3210)
 
-The primary script for training is `train.py` which downloads the required data and performs the training.
+Note that installing Tensorflow and Keras can be quite a hassle, so we recommend using [Anaconda](https://www.continuum.io/downloads) or 
+[Miniconda](https://conda.io/miniconda.html) as Python distribution (we did so for preparing Travis-CI and it worked).
+
+To accelerate training even further, you can make use of your GPU, by installing tensorflow-gpu instead of tensorflow
+via pip (note that you can only have one of them) and the required Nvidia drivers. For Windows, we recommend the
+[excellent tutorial by Phil Ferriere](https://github.com/philferriere/dlwin). For Linux, we recommend using the
+ official tutorials by [Tensorflow](https://www.tensorflow.org/install/) and [Keras](https://keras.io/#installation).
+
+## Training the model
+
+`python TrainModel.py` can be used to training the convolutional neural network. 
+It will automatically download and prepare three separate datasets for training with
+Keras and Tensorflow (MUSCIMA dataset of handwritten music scores, 
+Pascal VOC dataset of general purpose images and an additional dataset that 
+was created for this project, containing 1000 realistic score images and 1000 
+images of other documents and objects). 
+
+The result of this training is a .h5 (e.g. vgg.h5) file that contains the trained model.
+
+_Troubleshooting_: If for some reason the download of any of the datasets fails, stop the script, remove the partially
+downloaded file and restart the script.
+
+## Exporting the Model for being used in Tensorflow
+
+Since the Android App only uses Tensorflow, the resulting Keras model (despite having a tensorflow model inside)
+has to be exported into a Protobuf file. This is a bit cumbersome, because Tensorflow separates between
+the model description and the actual weights. To get both of them into one file, one has to freeze the model.
+
+`python ExportModelToTensorflow.py --path_to_trained_keras_model vgg.h5` will take the file `vgg.h5` and create
+ a file called `output_graph.pb` that is ready to be used in the Android application.
+
+# Additional Dataset
+If you are just interested in the additional dataset that was created for this project,
+it can be downloaded from [here](https://owncloud.tuwien.ac.at/index.php/s/JHzEMlwCSw8lTFp).
+
 
 # Authors
-Alexander Pacha, TU Wien
+Alexander Pacha, [TU Wien](https://www.ims.tuwien.ac.at/people/alexander-pacha)
 
 # License
 
