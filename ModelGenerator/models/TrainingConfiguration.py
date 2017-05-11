@@ -8,7 +8,7 @@ class TrainingConfiguration(ABC):
                  data_shape: tuple = (256, 256, 3),
                  number_of_epochs: int = 200,
                  number_of_epochs_before_early_stopping: int = 10,
-                 number_of_epochs_before_reducing_learning_rate: int = 8,
+                 number_of_epochs_before_reducing_learning_rate: int = 5,
                  training_minibatch_size: int = 16,
                  initialization: str = "he_normal",
                  learning_rate: float = 0.001,

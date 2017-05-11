@@ -9,10 +9,6 @@ from models.TrainingConfiguration import TrainingConfiguration
 class VggConfiguration(TrainingConfiguration):
     """ A rudimentary configuration for starting """
 
-    def __init__(self):
-        super().__init__()
-        self.number_of_epochs_before_reducing_learning_rate = 5
-
     def classifier(self) -> Sequential:
         """ Returns the classifier of this configuration """
         classifier = Sequential()

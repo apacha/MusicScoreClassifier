@@ -58,7 +58,7 @@ if __name__ == "__main__":
             "--dataset_directory",
             type=str,
             default="../data",
-            help="The directory, that is used for storing the images during training")
+            help="The directory, where the extracted dataset will be copied to")
 
     flags, unparsed = parser.parse_known_args()
 
