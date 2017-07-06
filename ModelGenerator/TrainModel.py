@@ -24,7 +24,9 @@ def train_model(dataset_directory: str,
 
     if delete_and_recreate_dataset_directory:
         print("Deleting dataset directory and creating it anew")
-        shutil.rmtree(dataset_directory)
+        
+        if os.path.exists(dataset_directory):
+            shutil.rmtree(dataset_directory)
 
         pascal_voc_dataset = PascalVocDataset(dataset_directory)
         pascal_voc_dataset.download_and_extract_dataset()
