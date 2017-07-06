@@ -1,18 +1,14 @@
 # Music Score Classifier
 
-This repository is the model trainer part of the Mobile Music Score Classifier, which is a mobile Android application that takes the live camera-feed and classifies the image in real-time into either music scores, or something else and displays the result in the application.
-It is part of a set of three tools:
+This repository is the model trainer part of the Mobile Music Score Classifier, which is a mobile Android application that takes the live camera-feed and classifies the image in real-time into either music scores, or something else and displays the result in the application. It is part of a set of three tools:
 
-* **Model Trainer**: https://github.com/apacha/MusicScoreClassifier for the training of a classifier that uses Deep Learning to train a model to automatically classify images into scores or something else.
-* **Mobile App**: https://github.com/apacha/MobileMusicScoreClassifier for the mobile Android application that uses a trained model to perform real-time classification on a mobile device.
-* **Manual Classifier**: https://github.com/apacha/ManualMusicScoreClassifier for a small C#/WPF application that can be used manually classify images, used during evaluation.
-
-|Model Trainer|Mobile App|Manual Classifier|
+|[Model Trainer](https://github.com/apacha/MusicScoreClassifier)|[Mobile App](https://github.com/apacha/MobileMusicScoreClassifier)|[Manual Classifier](https://github.com/apacha/ManualMusicScoreClassifier)|
 |:----:|:-----:|:-----:|
+|Trains a deep network to automatically classify images into scores or something else.|Mobile Android application that uses a trained model to perform real-time classification on a mobile device.|A small C#/WPF application that can be used manually classify images, used during evaluation|
 |[![Build Status](https://travis-ci.org/apacha/MusicScoreClassifier.svg?branch=master)](https://travis-ci.org/apacha/MusicScoreClassifier)|[![Build Status](https://travis-ci.org/apacha/MobileMusicScoreClassifier.svg?branch=master)](https://travis-ci.org/apacha/MobileMusicScoreClassifier)|[![Build status](https://ci.appveyor.com/api/projects/status/4715vyioa98eje0k?svg=true)](https://ci.appveyor.com/project/apacha/manualmusicscoreclassifier)|
 |[![codecov](https://codecov.io/gh/apacha/MusicScoreClassifier/branch/master/graph/badge.svg)](https://codecov.io/gh/apacha/MusicScoreClassifier)|||
 
-
+You might also be interested to check out my [follow-up work](https://github.com/apacha/MusicSymbolClassifier).
 
 # Running the application
 This repository contains several scripts that can be used independently of each other. 
