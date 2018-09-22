@@ -98,9 +98,6 @@ captures/
 
 # Intellij
 *.iml
-.idea/workspace.xml
-.idea/tasks.xml
-.idea/libraries
 
 # Keystore files
 *.jks
@@ -119,7 +116,6 @@ __pycache__/
 # Distribution / packaging
 .Python
 env/
-build/
 develop-eggs/
 dist/
 downloads/
@@ -160,7 +156,6 @@ coverage.xml
 *.pot
 
 # Django stuff:
-*.log
 local_settings.py
 
 # Flask stuff:
@@ -213,3 +208,5 @@ ENV/
 # .nfs files are created when an open file is removed but is still being accessed
 .nfs*
 
+*.tar
+*.zip
