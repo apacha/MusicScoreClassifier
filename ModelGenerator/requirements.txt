@@ -1,6 +1,6 @@
-keras == 2.0.8
-tensorflow == 1.3.0
-# tensorflow-gpu == 1.3.0 # Alternatively if available
+keras
+tensorflow
+# tensorflow-gpu # Alternatively if available
 codecov
 pytest
 pytest-cov
