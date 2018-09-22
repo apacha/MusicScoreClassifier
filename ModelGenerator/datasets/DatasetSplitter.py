@@ -80,6 +80,7 @@ class DatasetSplitter:
             shutil.copy(os.path.join(path_to_images_of_class, image), destination_path)
 
 
-# dataset_splitter = DatasetSplitter("C:\\Users\\Alex\\Repositories\\MusicScoreClassifier\\ModelGenerator\\data",
-#                                    "C:\\Users\\Alex\\Repositories\\MusicScoreClassifier\\ModelGenerator\\data")
-# dataset_splitter.split_images_into_training_validation_and_test_set()
+if __name__ == "__main__":
+    dataset_splitter = DatasetSplitter("../data",
+                                       "../data")
+    dataset_splitter.split_images_into_training_validation_and_test_set()
