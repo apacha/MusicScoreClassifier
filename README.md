@@ -16,11 +16,13 @@ Before running them, make sure that you have the necessary requirements installe
 
 ## Requirements
 
-- Python 3.6
-- Keras 2.0.6
-- Tensorflow 1.2.1 (or optionally tensorflow-gpu 1.2.1)
+This application has been tested with the following versions, but older and newer versions of Tensorflow and Keras are very likely to work exactly the same:
 
-Optional: If you want to print the graph of the model being trained, install GraphViz on Windows via http://www.graphviz.org/Download_windows.php and add /bin to the PATH or run `sudo apt-get install graphviz` on Ubuntu (see https://github.com/fchollet/keras/issues/3210)
+- Python 3.6
+- Keras 2.2.2
+- Tensorflow 1.10.0 (or optionally tensorflow-gpu 1.10.0)
+
+Optional: If you want to print the graph of the model being trained, install [GraphViz for Windows](https://graphviz.gitlab.io/_pages/Download/Download_windows.html) via and add /bin to the PATH or run `sudo apt-get install graphviz` on Ubuntu (see https://github.com/fchollet/keras/issues/3210)
 
 Note that installing Tensorflow and Keras can be quite a hassle, so we recommend using [Anaconda](https://www.continuum.io/downloads) or 
 [Miniconda](https://conda.io/miniconda.html) as Python distribution (we did so for preparing Travis-CI and it worked).
