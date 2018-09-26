@@ -105,14 +105,14 @@ def train_model(dataset_directory: str,
     print("Loss : ", evaluation[0])
     print("Accuracy : ", evaluation[1])
     print("Error : ", 1 - evaluation[1])
+    end_time = time()
+    print("Execution time: %.1fs" % (end_time - start_time))
 
     TrainingHistoryPlotter.plot_history(history,
                                         "Results-{0}-{1}.png".format(training_configuration.name(),
                                                                      datetime.date.today()),
                                         show_plot=show_plot_after_training)
 
-    end_time = time()
-    print("Execution time: %.1fs" % (end_time - start_time))
 
 
 if __name__ == "__main__":
@@ -126,8 +126,8 @@ if __name__ == "__main__":
     parser.add_argument(
             "--model_name",
             type=str,
-            default="vgg",
-            help="The model used for training the network. Currently allowed values are \'simple\' or \'vgg\'")
+            default="mobilenetv2",
+            help="The model used for training the network. Currently allowed values are \'simple\', \'vgg\', \'xception\', \'mobilenetv2\'")
     parser.add_argument(
             "--show_plot_after_training",
             nargs="?",
