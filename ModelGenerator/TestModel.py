@@ -7,7 +7,7 @@ import numpy
 from scipy import ndimage
 
 from skimage.transform import resize
-from tensorflow.python.keras.engine.saving import load_model
+from tensorflow import keras
 
 print("Parsing arguments ...")
 
