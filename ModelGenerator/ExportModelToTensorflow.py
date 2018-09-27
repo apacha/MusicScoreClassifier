@@ -1,15 +1,15 @@
 import os
 
 import argparse
-import keras
 import shutil
 import tensorflow
-from keras import backend as K
-from keras.models import Sequential
+from tensorflow.keras import backend as K
+from tensorflow.keras.models import Sequential
 from tensorflow.contrib.session_bundle import exporter
 from tensorflow.core.protobuf import saver_pb2
 from tensorflow.python.client import session
 from tensorflow.python.framework import graph_io
+from tensorflow.python.keras.engine.saving import load_model
 from tensorflow.python.ops import variables
 from tensorflow.python.tools import freeze_graph
 
@@ -18,7 +18,7 @@ K.set_learning_phase(0)  # all new operations will be in test mode from now on
 
 def export_model_to_tensorflow(path_to_trained_keras_model: str):
     print("Loading model for exporting to Protocol Buffer format...")
-    model = keras.models.load_model(path_to_trained_keras_model)
+    model = load_model(path_to_trained_keras_model)
 
     sess = K.get_session()
 

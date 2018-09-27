@@ -1,7 +1,7 @@
-from keras import Model
-from keras.layers import Dense
-from keras.optimizers import Adadelta
-from keras_applications.xception import Xception
+from tensorflow.python.keras import Model
+from tensorflow.python.keras.applications import Xception
+from tensorflow.python.keras.layers import Dense
+from tensorflow.python.keras.optimizers import Adadelta
 
 from models.TrainingConfiguration import TrainingConfiguration
 

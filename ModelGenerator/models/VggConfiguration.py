@@ -1,7 +1,8 @@
-from keras.layers import Activation, BatchNormalization, Convolution2D, Dense, Dropout, Flatten, MaxPooling2D
-from keras.models import Sequential
-from keras.optimizers import SGD
-from keras.regularizers import l2
+from tensorflow.python.keras import Model, Sequential
+from tensorflow.python.keras.layers import Dense, MaxPooling2D, Flatten, Dropout, Activation, Convolution2D, \
+    BatchNormalization
+from tensorflow.python.keras.optimizers import Adadelta, SGD
+from tensorflow.python.keras.regularizers import l2
 
 from models.TrainingConfiguration import TrainingConfiguration
 
@@ -9,7 +10,7 @@ from models.TrainingConfiguration import TrainingConfiguration
 class VggConfiguration(TrainingConfiguration):
     """ A rudimentary configuration for starting """
 
-    def classifier(self) -> Sequential:
+    def classifier(self) -> Model:
         """ Returns the classifier of this configuration """
         classifier = Sequential()
 

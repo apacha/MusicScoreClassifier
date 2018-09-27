@@ -1,5 +1,4 @@
-keras
-tensorflow
+tensorflow >= 1.11.0
 # tensorflow-gpu # Alternatively if available
 codecov
 pytest

@@ -1,6 +1,6 @@
 import numpy
-from keras.callbacks import History
 from matplotlib import pyplot
+from tensorflow.python.keras.callbacks import History
 
 
 class TrainingHistoryPlotter:

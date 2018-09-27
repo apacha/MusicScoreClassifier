@@ -3,14 +3,11 @@ import sys, os, inspect
 
 from argparse import ArgumentParser
 
-import keras
 import numpy
-import skimage
-from keras.utils import plot_model
 from scipy import ndimage
-from PIL import Image
 
 from skimage.transform import resize
+from tensorflow import keras
 
 print("Parsing arguments ...")
 

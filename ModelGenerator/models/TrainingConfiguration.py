@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from keras.engine import Model
+from tensorflow.python.keras import Model
 
 
 class TrainingConfiguration(ABC):

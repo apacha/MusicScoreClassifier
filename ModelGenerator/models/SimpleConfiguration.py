@@ -1,8 +1,8 @@
-from keras.layers import Convolution2D, Activation, MaxPooling2D, Flatten, Dense, Conv2D, BatchNormalization, \
-    AveragePooling2D, Dropout
-from keras.models import Sequential
-from keras.optimizers import SGD
-from keras.regularizers import l2
+from tensorflow.python.keras import Model, Sequential
+from tensorflow.python.keras.layers import Dense, MaxPooling2D, Flatten, Dropout, Activation, Convolution2D, \
+    BatchNormalization
+from tensorflow.python.keras.optimizers import Adadelta, SGD
+from tensorflow.python.keras.regularizers import l2
 
 from models.TrainingConfiguration import TrainingConfiguration
 
@@ -10,7 +10,7 @@ from models.TrainingConfiguration import TrainingConfiguration
 class SimpleConfiguration(TrainingConfiguration):
     """ A rudimentary configuration for starting """
 
-    def classifier(self) -> Sequential:
+    def classifier(self) -> Model:
         """ Returns the classifier of this configuration """
         classifier = Sequential()
 
