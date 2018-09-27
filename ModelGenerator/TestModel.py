@@ -15,11 +15,8 @@ from skimage.transform import resize
 print("Parsing arguments ...")
 
 parser = ArgumentParser("Classify an RGB-image with a pre-trained classifier")
-parser.add_argument("-c", "--model", dest="model_path",
-                    help="path to the classifier (*.h5)")
-parser.add_argument("-i", "--image", dest="image_path",
-                    help="path to the rgb image to classify")
-
+parser.add_argument("-c", "--model", dest="model_path", help="path to the classifier (*.h5)")
+parser.add_argument("-i", "--image", dest="image_path", help="path to the rgb image to classify")
 args = parser.parse_args()
 
 if len(sys.argv) < 5:
@@ -38,9 +35,9 @@ print(" Shape: {0}".format(input_image.shape))
 
 print("Loading classifier...")
 classifier = keras.models.load_model(model_path)
+classifier.summary()
 input_shape = classifier.input_shape[1:4]
 print(" Input shape: {0}, Output: {1} classes".format(input_shape, classifier.output_shape[1]))
-target_image_shape = input_shape[1:]
 
 print("Preprocessing image ...")
 print("  Resizing to " + str(input_shape))
@@ -51,7 +48,6 @@ print(" Result: shape: {0}, dtype: {1}, mean: {2:.3f}, std: {3:.3f}".format(norm
                                                                             normalized_input_image.dtype,
                                                                             numpy.mean(normalized_input_image),
                                                                             numpy.std(normalized_input_image)))
-
 
 print("Classifying image ...")
 
