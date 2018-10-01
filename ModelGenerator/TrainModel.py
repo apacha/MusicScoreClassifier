@@ -126,7 +126,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--model_name",
         type=str,
-        default="vgg",
+        default="mobilenetv2",
         help="The model used for training the network. Currently allowed values are \'simple\', \'vgg\', \'xception\', \'mobilenetv2\'")
     parser.add_argument(
         "--show_plot_after_training",

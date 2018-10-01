@@ -7,7 +7,7 @@ import numpy
 from scipy import ndimage
 
 from skimage.transform import resize
-from tensorflow import keras
+from tensorflow.python.keras.engine.saving import load_model
 
 print("Parsing arguments ...")
 
@@ -31,7 +31,7 @@ input_image = ndimage.imread(image_path, mode="RGB")
 print(" Shape: {0}".format(input_image.shape))
 
 print("Loading classifier...")
-classifier = keras.models.load_model(model_path)
+classifier = load_model(model_path)
 classifier.summary()
 input_shape = classifier.input_shape[1:4]
 print(" Input shape: {0}, Output: {1} classes".format(input_shape, classifier.output_shape[1]))
