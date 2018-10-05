@@ -19,18 +19,14 @@ Before running them, make sure that you have the necessary requirements installe
 This application has been tested with the following versions, but older and newer versions of Tensorflow and Keras are very likely to work exactly the same:
 
 - Python 3.6
-- Keras 2.2.2
-- Tensorflow 1.10.0 (or optionally tensorflow-gpu 1.10.0)
+- Keras 2.2.4
+- Tensorflow 1.11.0 (or optionally tensorflow-gpu 1.11.0)
 
 Optional: If you want to print the graph of the model being trained, install [GraphViz for Windows](https://graphviz.gitlab.io/_pages/Download/Download_windows.html) via and add /bin to the PATH or run `sudo apt-get install graphviz` on Ubuntu (see https://github.com/fchollet/keras/issues/3210)
 
-Note that installing Tensorflow and Keras can be quite a hassle, so we recommend using [Anaconda](https://www.continuum.io/downloads) or 
-[Miniconda](https://conda.io/miniconda.html) as Python distribution (we did so for preparing Travis-CI and it worked).
-
-To accelerate training even further, you can make use of your GPU, by installing tensorflow-gpu instead of tensorflow
-via pip (note that you can only have one of them) and the required Nvidia drivers. For Windows, we recommend the
-[excellent tutorial by Phil Ferriere](https://github.com/philferriere/dlwin). For Linux, we recommend using the
- official tutorials by [Tensorflow](https://www.tensorflow.org/install/) and [Keras](https://keras.io/#installation).
+We recommend [Anaconda](https://www.continuum.io/downloads) or 
+[Miniconda](https://conda.io/miniconda.html) as Python distribution (we did so for preparing Travis-CI and it worked). To accelerate training even further, you can make use of your GPU, by installing tensorflow-gpu instead of tensorflow
+via pip (note that you can only have one of them) and the required Nvidia drivers. 
 
 ## Training the model
 
@@ -41,7 +37,7 @@ Pascal VOC dataset of general purpose images and an additional dataset that
 was created for this project, containing 1000 realistic score images and 1000 
 images of other documents and objects). 
 
-The result of this training is a .h5 (e.g. vgg.h5) file that contains the trained model.
+The result of this training is a .h5 (e.g. mobilenetv2.h5) file that contains the trained model.
 
 _Troubleshooting_: If for some reason the download of any of the datasets fails, stop the script, remove the partially
 downloaded file and restart the script.
@@ -63,7 +59,7 @@ it can be downloaded from [here](https://owncloud.tuwien.ac.at/index.php/s/JHzEM
 
 Published under MIT License,
 
-Copyright (c) 2017 [Alexander Pacha](http://alexanderpacha.com), [TU Wien](https://www.ims.tuwien.ac.at/people/alexander-pacha)
+Copyright (c) 2018 [Alexander Pacha](http://alexanderpacha.com), [TU Wien](https://www.ims.tuwien.ac.at/people/alexander-pacha)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

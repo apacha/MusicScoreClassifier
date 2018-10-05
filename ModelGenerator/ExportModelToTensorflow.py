@@ -81,7 +81,7 @@ if __name__ == "__main__":
     parser.add_argument(
             "--path_to_trained_keras_model",
             type=str,
-            default="vgg.h5",
+            default="mobilenetv2.h5",
             help="The path to the file that containes the trained keras model that should be converted to a Protobuf file")
 
     flags, unparsed = parser.parse_known_args()
