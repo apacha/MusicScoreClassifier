@@ -26,7 +26,7 @@ def train_model(dataset_directory: str,
 
     if delete_and_recreate_dataset_directory:
         print("Deleting dataset directory and creating it anew")
-        
+
         if os.path.exists(dataset_directory):
             shutil.rmtree(dataset_directory)
 
@@ -88,12 +88,12 @@ def train_model(dataset_directory: str,
                                                 factor=training_configuration.learning_rate_reduction_factor,
                                                 min_lr=training_configuration.minimum_learning_rate)
     history = model.fit_generator(
-            generator=training_data_generator,
-            steps_per_epoch=training_steps_per_epoch,
-            epochs=training_configuration.number_of_epochs,
-            callbacks=[model_checkpoint, early_stop, learning_rate_reduction],
-            validation_data=validation_data_generator,
-            validation_steps=validation_steps_per_epoch
+        generator=training_data_generator,
+        steps_per_epoch=training_steps_per_epoch,
+        epochs=training_configuration.number_of_epochs,
+        callbacks=[model_checkpoint, early_stop, learning_rate_reduction],
+        validation_data=validation_data_generator,
+        validation_steps=validation_steps_per_epoch
     )
 
     print("Loading best model from check-point and testing...")
@@ -114,35 +114,22 @@ def train_model(dataset_directory: str,
                                         show_plot=show_plot_after_training)
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.register("type", "bool", lambda v: v.lower() == "true")
-    parser.add_argument(
-            "--dataset_directory",
-            type=str,
-            default="data",
-            help="The directory, that is used for storing the images during training")
-    parser.add_argument(
-            "--model_name",
-            type=str,
-            default="mobilenetv2",
-            help="The model used for training the network. Currently allowed values are \'simple\', \'vgg\', \'xception\', \'mobilenetv2\'")
-    parser.add_argument(
-            "--show_plot_after_training",
-            nargs="?",
-            const=True,
-            type="bool",
-            default=True,
-            help="Whether to show a plot with the accuracies after training or not.")
-    parser.add_argument(
-            "--delete_and_recreate_dataset_directory",
-            nargs="?",
-            const=True,
-            type="bool",
-            default=True,
-            help="Whether to delete and recreate the dataset-directory (by downloading the appropriate "
-                 "files from the internet) or simply use whatever data currently is inside of that directory.")
+    parser.add_argument("--dataset_directory", type=str, default="data",
+                        help="The directory, that is used for storing the images during training")
+    parser.add_argument("--model_name", type=str, default="xception",
+                        help="The model used for training the network. "
+                             "Currently allowed values are \'simple\', \'vgg\', \'xception\', \'mobilenetv2\'")
+    parser.add_argument("--show_plot_after_training", nargs="?", const=True, type="bool", default=True,
+                        help="Whether to show a plot with the accuracies after training or not.")
+    parser.add_argument("--delete_and_recreate_dataset_directory", dest="delete_and_recreate_dataset_directory",
+                        action="store_true",
+                        help="Whether to delete and recreate the dataset-directory (by downloading the appropriate "
+                             "files from the internet) or simply use whatever data currently is inside of that "
+                             "directory")
+    parser.set_defaults(delete_and_recreate_dataset_directory=False)
 
     flags, unparsed = parser.parse_known_args()
 

@@ -1,7 +1,7 @@
 from keras import Model
+from keras.applications import MobileNetV2
 from keras.layers import Dense
 from keras.optimizers import Adadelta
-from keras_applications.mobilenet_v2 import MobileNetV2
 from keras_applications.xception import Xception
 
 from models.TrainingConfiguration import TrainingConfiguration
