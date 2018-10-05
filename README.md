@@ -59,6 +59,19 @@ the model description and the actual weights. To get both of them into one file,
 # Additional Dataset
 If you are just interested in the additional dataset that was created for this project,
 it can be downloaded from [here](https://github.com/apacha/MusicScoreClassifier/releases/download/v1.0/MusicScoreClassificationDataset.zip).
+If you are using this dataset or the code from this repository, please consider citing the following [publication](https://alexanderpacha.files.wordpress.com/2018/06/icmla-2017-paper-towards-self-learning-optical-music-recognition-published.pdf):
+
+```text
+@InProceedings{Pacha2017a,
+  author    = {Pacha, Alexander and Eidenberger, Horst},
+  title     = {Towards Self-Learning Optical Music Recognition},
+  booktitle = {2017 16th IEEE International Conference on Machine Learning and Applications (ICMLA)},
+  year      = {2017},
+  pages     = {795--800},
+  month     = dec,
+  doi       = {10.1109/ICMLA.2017.00-60},
+}
+```
 
 # License
 
