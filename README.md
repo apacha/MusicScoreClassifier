@@ -42,6 +42,11 @@ The result of this training is a .h5 (e.g. mobilenetv2.h5) file that contains th
 _Troubleshooting_: If for some reason the download of any of the datasets fails, stop the script, remove the partially
 downloaded file and restart the script.
 
+## Using a trained model for inference
+You can download a trained model from [here](https://github.com/apacha/MusicScoreClassifier/releases).
+
+To classify an image, you can use the `TestModel.py` script and call it like this: `python TextModel.py -c mobilenetv2.h5 -i image_to_classify.jpg`
+
 ## Exporting the Model for being used in Tensorflow
 
 Since the Android App only uses Tensorflow, the resulting Keras model (despite having a tensorflow model inside)
@@ -53,7 +58,7 @@ the model description and the actual weights. To get both of them into one file,
 
 # Additional Dataset
 If you are just interested in the additional dataset that was created for this project,
-it can be downloaded from [here](https://owncloud.tuwien.ac.at/index.php/s/JHzEMlwCSw8lTFp).
+it can be downloaded from [here](https://github.com/apacha/MusicScoreClassifier/releases/download/v1.0/MusicScoreClassificationDataset.zip).
 
 # License
 
