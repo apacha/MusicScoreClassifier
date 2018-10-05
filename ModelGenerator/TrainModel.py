@@ -120,7 +120,7 @@ if __name__ == "__main__":
     parser.register("type", "bool", lambda v: v.lower() == "true")
     parser.add_argument("--dataset_directory", type=str, default="data",
                         help="The directory, that is used for storing the images during training")
-    parser.add_argument("--model_name", type=str, default="xception",
+    parser.add_argument("--model_name", type=str, default="mobilenetv2",
                         help="The model used for training the network. "
                              "Currently allowed values are \'simple\', \'vgg\', \'xception\', \'mobilenetv2\'")
     parser.add_argument("--show_plot_after_training", nargs="?", const=True, type="bool", default=True,
