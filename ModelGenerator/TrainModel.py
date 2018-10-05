@@ -118,31 +118,19 @@ def train_model(dataset_directory: str,
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.register("type", "bool", lambda v: v.lower() == "true")
-    parser.add_argument(
-        "--dataset_directory",
-        type=str,
-        default="data",
-        help="The directory, that is used for storing the images during training")
-    parser.add_argument(
-        "--model_name",
-        type=str,
-        default="mobilenetv2",
-        help="The model used for training the network. Currently allowed values are \'simple\', \'vgg\', \'xception\', \'mobilenetv2\'")
-    parser.add_argument(
-        "--show_plot_after_training",
-        nargs="?",
-        const=True,
-        type="bool",
-        default=True,
-        help="Whether to show a plot with the accuracies after training or not.")
-    parser.add_argument(
-        "--delete_and_recreate_dataset_directory",
-        nargs="?",
-        const=True,
-        type="bool",
-        default=True,
-        help="Whether to delete and recreate the dataset-directory (by downloading the appropriate "
-             "files from the internet) or simply use whatever data currently is inside of that directory.")
+    parser.add_argument("--dataset_directory", type=str, default="data",
+                        help="The directory, that is used for storing the images during training")
+    parser.add_argument("--model_name", type=str, default="xception",
+                        help="The model used for training the network. "
+                             "Currently allowed values are \'simple\', \'vgg\', \'xception\', \'mobilenetv2\'")
+    parser.add_argument("--show_plot_after_training", nargs="?", const=True, type="bool", default=True,
+                        help="Whether to show a plot with the accuracies after training or not.")
+    parser.add_argument("--delete_and_recreate_dataset_directory", dest="delete_and_recreate_dataset_directory",
+                        action="store_true",
+                        help="Whether to delete and recreate the dataset-directory (by downloading the appropriate "
+                             "files from the internet) or simply use whatever data currently is inside of that "
+                             "directory")
+    parser.set_defaults(delete_and_recreate_dataset_directory=False)
 
     flags, unparsed = parser.parse_known_args()
 
