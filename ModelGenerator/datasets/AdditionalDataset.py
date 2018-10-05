@@ -18,7 +18,7 @@ class AdditionalDataset(Dataset):
         :param destination_directory: The root directory, into which the data will be placed.        
         """
         super().__init__(destination_directory)
-        self.url = "https://owncloud.tuwien.ac.at/index.php/s/JHzEMlwCSw8lTFp/download"
+        self.url = "https://github.com/apacha/MusicScoreClassifier/releases/download/v1.0/MusicScoreClassificationDataset.zip"
         self.dataset_filename = "MusicScoreClassificationDataset.zip"
 
     def download_and_extract_dataset(self):
