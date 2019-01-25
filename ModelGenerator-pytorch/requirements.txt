@@ -1,0 +1,12 @@
+pytorch
+torchsummary
+torchvision
+pytorchviz
+
+codecov
+pytest
+pytest-cov
+matplotlib
+scipy
+pillow
+tqdm
