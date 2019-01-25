@@ -32,9 +32,6 @@ class ScoreClassificationDatasetTest(unittest.TestCase):
     def test_show_first_image(self):
         self.dataset.show_sample(0)
 
-    def test_show_first_image(self):
-        self.dataset.show_sample(0)
-
     def test_resize_image(self):
         resizer = Resize((128,128))
         dataset = ScoreClassificationDataset("data", resizer)
