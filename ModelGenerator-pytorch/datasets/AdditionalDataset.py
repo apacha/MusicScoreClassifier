@@ -5,7 +5,7 @@ import zipfile
 import argparse
 import numpy
 
-from datasets.Dataset import OnlineDataset
+from datasets.OnlineDataset import OnlineDataset
 
 
 class AdditionalDataset(OnlineDataset):

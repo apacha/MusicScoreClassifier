@@ -1,11 +1,11 @@
 import os
+from glob import glob
 from typing import Dict
 
+import matplotlib.pyplot as plt
 from PIL import Image
 from torch.utils.data import Dataset
-from glob import glob
-import matplotlib.pyplot as plt
-from torchvision.transforms import Resize
+
 
 class ScoreClassificationDataset(Dataset):
 

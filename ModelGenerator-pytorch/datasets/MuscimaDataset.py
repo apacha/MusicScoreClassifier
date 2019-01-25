@@ -4,7 +4,7 @@ import shutil
 
 import argparse
 
-from datasets.Dataset import OnlineDataset
+from datasets.OnlineDataset import OnlineDataset
 
 
 class MuscimaDataset(OnlineDataset):
