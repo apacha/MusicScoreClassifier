@@ -1,7 +1,7 @@
 pytorch
 torchsummary
 torchvision
-pytorchviz
+# pytorchviz
 
 codecov
 pytest
