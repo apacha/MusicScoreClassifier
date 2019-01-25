@@ -1,77 +1,96 @@
+import argparse
 import datetime
 import os
+import shutil
+import torch
 from time import time
 
-import argparse
-
-import numpy as np
-import shutil
+from torch import Tensor
+from torch.nn import CrossEntropyLoss
+from torch.utils.data import DataLoader
+from torchsummary import summary
+from torchvision.datasets import ImageFolder
+from torchvision.transforms import transforms
 
 from datasets.AdditionalDataset import AdditionalDataset
 from datasets.DatasetSplitter import DatasetSplitter
 from datasets.MuscimaDataset import MuscimaDataset
 from datasets.PascalVocDataset import PascalVocDataset
+from models.SimpleNetwork import SimpleNetwork
+import torch.optim as optim
+
+
+def delete_dataset_directory(dataset_directory):
+    print("Deleting dataset directory and creating it anew")
+
+    if os.path.exists(dataset_directory):
+        shutil.rmtree(dataset_directory)
+
+
+def download_datasets(dataset_directory):
+    pascal_voc_dataset = PascalVocDataset(dataset_directory)
+    pascal_voc_dataset.download_and_extract_dataset()
+    muscima_dataset = MuscimaDataset(dataset_directory)
+    muscima_dataset.download_and_extract_dataset()
+    additional_dataset = AdditionalDataset(dataset_directory)
+    additional_dataset.download_and_extract_dataset()
 
 
 def train_model(dataset_directory: str,
                 model_name: str,
-                show_plot_after_training: bool,
                 delete_and_recreate_dataset_directory: bool):
     print("Downloading and extracting datasets...")
 
     if delete_and_recreate_dataset_directory:
-        print("Deleting dataset directory and creating it anew")
-
-        if os.path.exists(dataset_directory):
-            shutil.rmtree(dataset_directory)
-
-        pascal_voc_dataset = PascalVocDataset(dataset_directory)
-        pascal_voc_dataset.download_and_extract_dataset()
-        muscima_dataset = MuscimaDataset(dataset_directory)
-        muscima_dataset.download_and_extract_dataset()
-        additional_dataset = AdditionalDataset(dataset_directory)
-        additional_dataset.download_and_extract_dataset()
-
+        delete_dataset_directory(dataset_directory)
+        download_datasets(dataset_directory)
         dataset_splitter = DatasetSplitter(dataset_directory, dataset_directory)
         dataset_splitter.split_images_into_training_validation_and_test_set()
 
     print("Training on dataset...")
     start_time = time()
 
+    data_transform = transforms.Compose([
+        transforms.RandomRotation(10),
+        transforms.Resize((128, 128)),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor()
+    ])
+
+    minibatch_size = 1
+    music_scores_dataset = ImageFolder(root=os.path.join(dataset_directory, "training"), transform=data_transform, )
+    training_dataset_loader = DataLoader(music_scores_dataset, batch_size=minibatch_size, shuffle=True, num_workers=4)
+
+    network = SimpleNetwork()
+    print(network)
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    summary(network.to(device), (3, 128, 128))
+
+    criterion = CrossEntropyLoss()
+    optimizer = optim.SGD(network.parameters(), lr=0.001, momentum=0.9)
+    # optimizer = optim.Adadelta(network.parameters())
+
+    for epoch in range(10):  # loop over the dataset multiple times
+        for i, data in enumerate(training_dataset_loader):
+            # get the inputs
+            inputs, labels = data
+            inputs, labels = inputs.to(device), labels.to(device)
+
+            # zero the parameter gradients before computing the next batch
+            optimizer.zero_grad()
+
+            outputs = network(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+            # print statistics
+            print('[%d, %5d] loss: %.3f' %
+                  (epoch + 1, (i + 1) * minibatch_size, loss.item()))
+
+    print('Finished Training')
+
     return
-
-    training_configuration = ConfigurationFactory.get_configuration_by_name(model_name)
-    img_rows, img_cols = training_configuration.data_shape[0], training_configuration.data_shape[1]
-    number_of_pixels_shift = training_configuration.number_of_pixel_shift
-
-    train_generator = ImageDataGenerator(horizontal_flip=True,
-                                         rotation_range=10,
-                                         width_shift_range=number_of_pixels_shift / img_rows,
-                                         height_shift_range=number_of_pixels_shift / img_cols,
-                                         )
-    training_data_generator = train_generator.flow_from_directory(os.path.join(dataset_directory, "training"),
-                                                                  target_size=(img_cols, img_rows),
-                                                                  batch_size=training_configuration.training_minibatch_size,
-                                                                  )
-    training_steps_per_epoch = np.math.ceil(training_data_generator.samples / training_data_generator.batch_size)
-
-    validation_generator = ImageDataGenerator()
-    validation_data_generator = validation_generator.flow_from_directory(os.path.join(dataset_directory, "validation"),
-                                                                         target_size=(img_cols, img_rows),
-                                                                         batch_size=training_configuration.training_minibatch_size)
-    validation_steps_per_epoch = np.math.ceil(validation_data_generator.samples / validation_data_generator.batch_size)
-
-    test_generator = ImageDataGenerator()
-    test_data_generator = test_generator.flow_from_directory(os.path.join(dataset_directory, "test"),
-                                                             target_size=(img_cols, img_rows),
-                                                             batch_size=training_configuration.training_minibatch_size)
-    test_steps_per_epoch = np.math.ceil(test_data_generator.samples / test_data_generator.batch_size)
-
-    model = training_configuration.classifier()
-    model.summary()
-
-    print("Model {0} loaded.".format(training_configuration.name()))
-    print(training_configuration.summary())
 
     best_model_path = "{0}.h5".format(training_configuration.name())
 
@@ -119,8 +138,6 @@ if __name__ == "__main__":
     parser.add_argument("--model_name", type=str, default="mobilenetv2",
                         help="The model used for training the network. "
                              "Currently allowed values are \'simple\', \'vgg\', \'xception\', \'mobilenetv2\'")
-    parser.add_argument("--show_plot_after_training", nargs="?", const=True, type="bool", default=True,
-                        help="Whether to show a plot with the accuracies after training or not.")
     parser.add_argument("--delete_and_recreate_dataset_directory", dest="delete_and_recreate_dataset_directory",
                         action="store_true",
                         help="Whether to delete and recreate the dataset-directory (by downloading the appropriate "
@@ -132,5 +149,4 @@ if __name__ == "__main__":
 
     train_model(flags.dataset_directory,
                 flags.model_name,
-                flags.show_plot_after_training,
                 flags.delete_and_recreate_dataset_directory)
