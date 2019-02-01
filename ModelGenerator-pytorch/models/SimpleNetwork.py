@@ -13,7 +13,7 @@ class SimpleNetwork(nn.Module):
         self.conv3 = nn.Conv2d(96, 128, 3, padding=1)
         self.conv4 = nn.Conv2d(128, 192, 3, padding=1)
         self.dropout = nn.Dropout(0.5)
-        self.fc1 = nn.Linear(192 * 7 * 7, 64)
+        self.fc1 = nn.Linear(192 * 13 * 13, 64)
         self.fc2 = nn.Linear(64, 32)
         self.fc3 = nn.Linear(32, 2)
 

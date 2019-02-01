@@ -2,16 +2,15 @@ import argparse
 import datetime
 import os
 import shutil
-from math import ceil
 from typing import Tuple
 
 import torch
 from time import time
 
-from ignite.engine import Engine, create_supervised_trainer, create_supervised_evaluator, Events
+from ignite.engine import create_supervised_trainer, create_supervised_evaluator, Events
 from ignite.metrics import Accuracy, Loss
 from torch.nn import CrossEntropyLoss
-from torch.optim import SGD, Adadelta
+from torch.optim import SGD
 from torch.utils.data import DataLoader
 from torchsummary import summary
 from torchvision.datasets import ImageFolder
@@ -23,7 +22,6 @@ from datasets.DatasetSplitter import DatasetSplitter
 from datasets.MuscimaDataset import MuscimaDataset
 from datasets.PascalVocDataset import PascalVocDataset
 from models.SimpleNetwork import SimpleNetwork
-import torch.optim as optim
 
 
 def delete_dataset_directory(dataset_directory):
@@ -55,7 +53,7 @@ def get_dataset_loaders(dataset_directory, minibatch_size) -> Tuple[DataLoader, 
         transforms.ToTensor()
     ])
 
-    number_of_workers = 6
+    number_of_workers = 4
     training_dataset = ImageFolder(root=os.path.join(dataset_directory, "training"), transform=data_transform)
     training_dataset_loader = DataLoader(training_dataset, batch_size=minibatch_size, shuffle=True,
                                          num_workers=number_of_workers)
@@ -92,13 +90,13 @@ def train_model(dataset_directory: str,
     # optimizer = Adadelta(model.parameters())
     cross_entropy_loss = CrossEntropyLoss()
 
-    trainer = create_supervised_trainer(model, optimizer, cross_entropy_loss, device)
+    trainer = create_supervised_trainer(model, optimizer, cross_entropy_loss, device=device)
     evaluator = create_supervised_evaluator(model,
                                             metrics={'accuracy': Accuracy(), 'cross-entropy': Loss(cross_entropy_loss)},
                                             device=device)
 
     iteration_between_progress_bar_updates = 1
-    progress_description_template = "ITERATION - loss: {:.2f} - acc: {:.2f}"
+    progress_description_template = "ITERATION - loss: {:.2f}"
     progress_bar = tqdm(
         initial=0, leave=False, total=len(training_dataset_loader),
         desc=progress_description_template.format(0)
@@ -114,6 +112,7 @@ def train_model(dataset_directory: str,
     @trainer.on(Events.EPOCH_COMPLETED)
     def log_training_results(trainer):
         progress_bar.refresh()
+        print(" Computing metrics...")
         evaluator.run(training_dataset_loader)
         metrics = evaluator.state.metrics
         print("Training Results - Epoch: {}  Avg accuracy: {:.2f} Avg loss: {:.2f}"
