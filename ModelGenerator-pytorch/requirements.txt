@@ -3,6 +3,7 @@ torchsummary
 torchvision
 # Optionally install via 'pip install git+https://github.com/szagoruyko/pytorchviz'
 # pytorchviz
+pytorch-ignite
 
 codecov
 pytest

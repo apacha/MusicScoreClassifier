@@ -3,11 +3,15 @@ import datetime
 import os
 import shutil
 from math import ceil
+from typing import Tuple
 
 import torch
 from time import time
 
+from ignite.engine import Engine, create_supervised_trainer, create_supervised_evaluator, Events
+from ignite.metrics import Accuracy, Loss
 from torch.nn import CrossEntropyLoss
+from torch.optim import SGD, Adadelta
 from torch.utils.data import DataLoader
 from torchsummary import summary
 from torchvision.datasets import ImageFolder
@@ -38,9 +42,36 @@ def download_datasets(dataset_directory):
     additional_dataset.download_and_extract_dataset()
 
 
+def print_model_architecture_and_parameters(network):
+    print(network)
+    summary(network, (3, 128, 128))
+
+
+def get_dataset_loaders(dataset_directory, minibatch_size) -> Tuple[DataLoader, DataLoader]:
+    data_transform = transforms.Compose([
+        transforms.RandomRotation(10),
+        transforms.Resize((128, 128)),
+        transforms.RandomHorizontalFlip(),
+        transforms.ToTensor()
+    ])
+
+    number_of_workers = 6
+    training_dataset = ImageFolder(root=os.path.join(dataset_directory, "training"), transform=data_transform)
+    training_dataset_loader = DataLoader(training_dataset, batch_size=minibatch_size, shuffle=True,
+                                         num_workers=number_of_workers)
+    validation_dataset = ImageFolder(root=os.path.join(dataset_directory, "training"), transform=data_transform)
+    validation_dataset_loader = DataLoader(validation_dataset, batch_size=minibatch_size, shuffle=False,
+                                           num_workers=number_of_workers)
+
+    return training_dataset_loader, validation_dataset_loader
+
+
 def train_model(dataset_directory: str,
                 model_name: str,
-                delete_and_recreate_dataset_directory: bool):
+                delete_and_recreate_dataset_directory: bool,
+                minibatch_size=256):
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
     print("Downloading and extracting datasets...")
 
     if delete_and_recreate_dataset_directory:
@@ -50,44 +81,58 @@ def train_model(dataset_directory: str,
         dataset_splitter.split_images_into_training_validation_and_test_set()
 
     print("Training on dataset...")
-    start_time = time()
 
-    data_transform = transforms.Compose([
-        transforms.RandomRotation(10),
-        transforms.Resize((128, 128)),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor()
-    ])
+    model = SimpleNetwork()
+    model.to(device)
+    print_model_architecture_and_parameters(model)
 
-    minibatch_size = 32
-    music_scores_dataset = ImageFolder(root=os.path.join(dataset_directory, "training"), transform=data_transform, )
-    training_dataset_loader = DataLoader(music_scores_dataset, batch_size=minibatch_size, shuffle=True, num_workers=4)
+    training_dataset_loader, validation_dataset_loader = get_dataset_loaders(dataset_directory, minibatch_size)
 
-    network = SimpleNetwork()
-    print(network)
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    summary(network.to(device), (3, 128, 128))
+    optimizer = SGD(model.parameters(), lr=0.001, momentum=0.9)
+    # optimizer = Adadelta(model.parameters())
+    cross_entropy_loss = CrossEntropyLoss()
 
-    criterion = CrossEntropyLoss()
-    optimizer = optim.SGD(network.parameters(), lr=0.001, momentum=0.9)
-    # optimizer = optim.Adadelta(network.parameters())
+    trainer = create_supervised_trainer(model, optimizer, cross_entropy_loss, device)
+    evaluator = create_supervised_evaluator(model,
+                                            metrics={'accuracy': Accuracy(), 'cross-entropy': Loss(cross_entropy_loss)},
+                                            device=device)
 
-    for epoch in range(10):  # loop over the dataset multiple times
-        # print statistics
-        # ('[%d, %5d] loss: %.3f' %             (epoch + 1, (i + 1) * minibatch_size, loss.item()))
-        for i, data in tqdm(enumerate(training_dataset_loader), desc=f"Training epoch {epoch + 1}",
-                            total=ceil(len(training_dataset_loader.dataset) / minibatch_size)):
-            # get the inputs
-            inputs, labels = data
-            inputs, labels = inputs.to(device), labels.to(device)
+    @trainer.on(Events.ITERATION_COMPLETED)
+    def log_training_loss(trainer):
+        print("Epoch {0} - Loss: {1:.2f}".format(trainer.state.epoch, trainer.state.output))
 
-            # zero the parameter gradients before computing the next batch
-            optimizer.zero_grad()
+    @trainer.on(Events.EPOCH_COMPLETED)
+    def log_training_results(trainer):
+        evaluator.run(training_dataset_loader)
+        metrics = evaluator.state.metrics
+        print("Training Results - Epoch: {}  Avg accuracy: {:.2f} Avg loss: {:.2f}"
+              .format(trainer.state.epoch, metrics['accuracy'], metrics['cross-entropy']))
 
-            outputs = network(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
+    @trainer.on(Events.EPOCH_COMPLETED)
+    def log_validation_results(trainer):
+        evaluator.run(validation_dataset_loader)
+        metrics = evaluator.state.metrics
+        print("Validation Results - Epoch: {}  Avg accuracy: {:.2f} Avg loss: {:.2f}"
+              .format(trainer.state.epoch, metrics['accuracy'], metrics['cross-entropy']))
+
+    trainer.run(training_dataset_loader, max_epochs=10)
+
+    # for epoch in range(10):  # loop over the dataset multiple times
+    #     # print statistics
+    #     # ('[%d, %5d] loss: %.3f' %             (epoch + 1, (i + 1) * minibatch_size, loss.item()))
+    #     for i, data in tqdm(enumerate(training_dataset_loader), desc=f"Training epoch {epoch + 1}",
+    #                         total=ceil(len(training_dataset_loader.dataset) / minibatch_size)):
+    #         # get the inputs
+    #         inputs, labels = data
+    #         inputs, labels = inputs.to(device), labels.to(device)
+    #
+    #         # zero the parameter gradients before computing the next batch
+    #         optimizer.zero_grad()
+    #
+    #         outputs = model(inputs)
+    #         loss = cross_entropy_loss(outputs, labels)
+    #         loss.backward()
+    #         optimizer.step()
 
     print('Finished Training')
 
