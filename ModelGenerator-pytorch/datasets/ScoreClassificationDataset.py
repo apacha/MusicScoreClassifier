@@ -2,7 +2,6 @@ import os
 from glob import glob
 from typing import Dict
 
-import matplotlib.pyplot as plt
 from PIL import Image
 from torch.utils.data import Dataset
 
@@ -34,8 +33,3 @@ class ScoreClassificationDataset(Dataset):
         sample = {'image': image, 'class': self.classes[index]}
 
         return sample
-
-    def show_sample(self, index):
-        """Show image with landmarks"""
-        plt.imshow(self[index]["image"])
-        plt.show()

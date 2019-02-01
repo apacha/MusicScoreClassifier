@@ -28,10 +28,6 @@ class ScoreClassificationDatasetTest(unittest.TestCase):
         self.assertIsNotNone(first_item["image"])
         self.assertIsInstance(first_item["image"], Image)
 
-    @pytest.mark.skip(reason="No assertion. Just shows first images")
-    def test_show_first_image(self):
-        self.dataset.show_sample(0)
-
     def test_resize_image(self):
         resizer = Resize((128,128))
         dataset = ScoreClassificationDataset("data", resizer)
