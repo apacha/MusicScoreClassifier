@@ -3,7 +3,7 @@ dist: trusty
 language: python
 
 python:
-  - "3.5"
+  - "3.6"
 
 install:
   # code below is taken from http://conda.pydata.org/docs/travis.html
@@ -19,7 +19,9 @@ install:
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib pandas pytest h5py Pillow
   - source activate test-environment
 
-    # Install additional requirements (Keras and Tensorflow CPU-Version)
+  # Install additional requirements (Keras and Tensorflow CPU-Version)
+  - pip install https://download.pytorch.org/whl/cpu/torch-1.0.0-cp36-cp36m-linux_x86_64.whl
+  - pip install git+https://github.com/szagoruyko/pytorchviz
   - pip install -r ModelGenerator/requirements.txt
   - pip install -r ModelGenerator-pytorch/requirements.txt
 
@@ -27,22 +29,6 @@ script:
   - pytest --cov=./
   - cd ModelGenerator-pytorch
   - pytest --cov=./
-
-
-  ## run keras backend init to initialize backend config
-  #- python -c "import keras.backend"
-  ## create dataset directory to avoid concurrent directory creation at runtime
-  #- mkdir ~/.keras/datasets
-  ## set up keras backend
-  #- sed -i -e 's/"backend":[[:space:]]*"[^"]*/"backend":\ "'$KERAS_BACKEND'/g' ~/.keras/keras.json;
-  #- echo -e "Running tests with the following config:\n$(cat ~/.keras/keras.json)"
-  #- if [[ "$TEST_MODE" == "INTEGRATION_TESTS" ]]; then
-  #     PYTHONPATH=$PWD:$PYTHONPATH py.test tests/integration_tests;
-  #  elif [[ "$TEST_MODE" == "PEP8" ]]; then
-  #     PYTHONPATH=$PWD:$PYTHONPATH py.test --pep8 -m pep8 -n0;
-  #  else
-  #     PYTHONPATH=$PWD:$PYTHONPATH py.test tests/ --ignore=tests/integration_tests --cov=keras tests/ --cov-fail-under 78 --cov-report term-missing;
-  #  fi
 
 after_success:
   - codecov

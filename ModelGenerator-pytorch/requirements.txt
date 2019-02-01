@@ -1,8 +1,8 @@
-cython
-pytorch
+torch
 torchsummary
 torchvision
-# pytorchviz
+# Install via 'pip install git+https://github.com/szagoruyko/pytorchviz'
+pytorchviz
 
 codecov
 pytest
