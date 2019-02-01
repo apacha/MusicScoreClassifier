@@ -2,15 +2,17 @@ import argparse
 import datetime
 import os
 import shutil
+from math import ceil
+
 import torch
 from time import time
 
-from torch import Tensor
 from torch.nn import CrossEntropyLoss
 from torch.utils.data import DataLoader
 from torchsummary import summary
 from torchvision.datasets import ImageFolder
 from torchvision.transforms import transforms
+from tqdm import tqdm
 
 from datasets.AdditionalDataset import AdditionalDataset
 from datasets.DatasetSplitter import DatasetSplitter
@@ -57,7 +59,7 @@ def train_model(dataset_directory: str,
         transforms.ToTensor()
     ])
 
-    minibatch_size = 1
+    minibatch_size = 32
     music_scores_dataset = ImageFolder(root=os.path.join(dataset_directory, "training"), transform=data_transform, )
     training_dataset_loader = DataLoader(music_scores_dataset, batch_size=minibatch_size, shuffle=True, num_workers=4)
 
@@ -71,7 +73,10 @@ def train_model(dataset_directory: str,
     # optimizer = optim.Adadelta(network.parameters())
 
     for epoch in range(10):  # loop over the dataset multiple times
-        for i, data in enumerate(training_dataset_loader):
+        # print statistics
+        # ('[%d, %5d] loss: %.3f' %             (epoch + 1, (i + 1) * minibatch_size, loss.item()))
+        for i, data in tqdm(enumerate(training_dataset_loader), desc=f"Training epoch {epoch + 1}",
+                            total=ceil(len(training_dataset_loader.dataset) / minibatch_size)):
             # get the inputs
             inputs, labels = data
             inputs, labels = inputs.to(device), labels.to(device)
@@ -83,10 +88,6 @@ def train_model(dataset_directory: str,
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
-
-            # print statistics
-            print('[%d, %5d] loss: %.3f' %
-                  (epoch + 1, (i + 1) * minibatch_size, loss.item()))
 
     print('Finished Training')
 
