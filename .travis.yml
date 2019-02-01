@@ -16,6 +16,11 @@ install:
   # Useful for debugging any issues with conda
   - conda info -a
   
+  # Upgrading libgcc to prevent an error when running the tests (see https://github.com/tensorflow/tensorflow/issues/5017#issuecomment-295566267)
+  - conda install libgcc
+  - conda update -f libstdcxx-ng
+  - conda install -c anaconda tensorflow
+  
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib pandas pytest h5py Pillow
   - source activate test-environment
   # Install additional requirements
