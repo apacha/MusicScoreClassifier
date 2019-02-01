@@ -15,11 +15,10 @@ install:
   - conda update -q conda
   # Useful for debugging any issues with conda
   - conda info -a
-
+  
   - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION numpy scipy matplotlib pandas pytest h5py Pillow
   - source activate test-environment
-
-  # Install additional requirements (Keras and Tensorflow CPU-Version)
+  # Install additional requirements
   - pip install https://download.pytorch.org/whl/cpu/torch-1.0.0-cp36-cp36m-linux_x86_64.whl
   - pip install git+https://github.com/szagoruyko/pytorchviz
   - pip install -r ModelGenerator/requirements.txt
