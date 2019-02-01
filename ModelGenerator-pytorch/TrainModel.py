@@ -44,13 +44,13 @@ def download_datasets(dataset_directory):
 
 def print_model_architecture_and_parameters(network):
     print(network)
-    summary(network, (3, 128, 128))
+    summary(network, (3, 224, 224))
 
 
 def get_dataset_loaders(dataset_directory, minibatch_size) -> Tuple[DataLoader, DataLoader]:
     data_transform = transforms.Compose([
         transforms.RandomRotation(10),
-        transforms.Resize((128, 128)),
+        transforms.Resize((224, 224)),
         transforms.RandomHorizontalFlip(),
         transforms.ToTensor()
     ])
@@ -69,7 +69,7 @@ def get_dataset_loaders(dataset_directory, minibatch_size) -> Tuple[DataLoader, 
 def train_model(dataset_directory: str,
                 model_name: str,
                 delete_and_recreate_dataset_directory: bool,
-                minibatch_size=256):
+                minibatch_size=128):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     print("Downloading and extracting datasets...")
@@ -97,12 +97,23 @@ def train_model(dataset_directory: str,
                                             metrics={'accuracy': Accuracy(), 'cross-entropy': Loss(cross_entropy_loss)},
                                             device=device)
 
+    iteration_between_progress_bar_updates = 1
+    progress_description_template = "ITERATION - loss: {:.2f} - acc: {:.2f}"
+    progress_bar = tqdm(
+        initial=0, leave=False, total=len(training_dataset_loader),
+        desc=progress_description_template.format(0)
+    )
+
     @trainer.on(Events.ITERATION_COMPLETED)
     def log_training_loss(trainer):
-        print("Epoch {0} - Loss: {1:.2f}".format(trainer.state.epoch, trainer.state.output))
+        iter = (trainer.state.iteration - 1) % len(training_dataset_loader) + 1
+        if iter % iteration_between_progress_bar_updates == 0:
+            progress_bar.desc = progress_description_template.format(trainer.state.output)
+            progress_bar.update(iteration_between_progress_bar_updates)
 
     @trainer.on(Events.EPOCH_COMPLETED)
     def log_training_results(trainer):
+        progress_bar.refresh()
         evaluator.run(training_dataset_loader)
         metrics = evaluator.state.metrics
         print("Training Results - Epoch: {}  Avg accuracy: {:.2f} Avg loss: {:.2f}"
@@ -114,25 +125,10 @@ def train_model(dataset_directory: str,
         metrics = evaluator.state.metrics
         print("Validation Results - Epoch: {}  Avg accuracy: {:.2f} Avg loss: {:.2f}"
               .format(trainer.state.epoch, metrics['accuracy'], metrics['cross-entropy']))
+        progress_bar.n = progress_bar.last_print_n = 0
 
     trainer.run(training_dataset_loader, max_epochs=10)
-
-    # for epoch in range(10):  # loop over the dataset multiple times
-    #     # print statistics
-    #     # ('[%d, %5d] loss: %.3f' %             (epoch + 1, (i + 1) * minibatch_size, loss.item()))
-    #     for i, data in tqdm(enumerate(training_dataset_loader), desc=f"Training epoch {epoch + 1}",
-    #                         total=ceil(len(training_dataset_loader.dataset) / minibatch_size)):
-    #         # get the inputs
-    #         inputs, labels = data
-    #         inputs, labels = inputs.to(device), labels.to(device)
-    #
-    #         # zero the parameter gradients before computing the next batch
-    #         optimizer.zero_grad()
-    #
-    #         outputs = model(inputs)
-    #         loss = cross_entropy_loss(outputs, labels)
-    #         loss.backward()
-    #         optimizer.step()
+    progress_bar.close()
 
     print('Finished Training')
 
