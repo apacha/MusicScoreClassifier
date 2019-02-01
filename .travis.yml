@@ -32,7 +32,7 @@ install:
 script:
   - pytest --cov=./
   - cd ModelGenerator-pytorch
-  - pytest --cov=./
+  - pytest --cov=./ -s
 
 after_success:
   - codecov
