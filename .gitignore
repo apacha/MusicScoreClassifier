@@ -210,3 +210,4 @@ ENV/
 
 *.tar
 *.zip
+/ModelGenerator-pytorch/checkpoints/
