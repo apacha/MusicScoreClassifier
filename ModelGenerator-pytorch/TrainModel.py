@@ -10,7 +10,7 @@ from time import time
 from ignite.engine import create_supervised_trainer, create_supervised_evaluator, Events, Engine
 from ignite.handlers import ModelCheckpoint, Timer, EarlyStopping
 from ignite.metrics import Accuracy, Loss
-from torch.nn import CrossEntropyLoss
+from torch.nn import CrossEntropyLoss, Module
 from torch.optim import SGD, Adadelta
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
@@ -93,17 +93,12 @@ def train_model(dataset_directory: str,
                                                                                                      minibatch_size)
 
     optimizer = Adadelta(model.parameters())
-    cross_entropy_loss = CrossEntropyLoss()
-    learning_rate_scheduler = ReduceLROnPlateau(optimizer, 'max', verbose=True)
+    learning_rate_scheduler = ReduceLROnPlateau(optimizer, mode='max', patience=8, verbose=True)
 
-    trainer = create_supervised_trainer(model, optimizer, cross_entropy_loss, device=device)
-    training_evaluator = create_supervised_evaluator(model,
-                                                     metrics={'accuracy': Accuracy(),
-                                                              'cross-entropy': Loss(cross_entropy_loss)},
-                                                     device=device)
+    trainer = create_supervised_trainer(model, optimizer, CrossEntropyLoss(), device=device)
     validation_evaluator = create_supervised_evaluator(model,
                                                        metrics={'accuracy': Accuracy(),
-                                                                'cross-entropy': Loss(cross_entropy_loss)},
+                                                                'cross-entropy': Loss(CrossEntropyLoss())},
                                                        device=device)
 
     iteration_between_progress_bar_updates = 1
@@ -121,20 +116,12 @@ def train_model(dataset_directory: str,
             progress_bar.update(iteration_between_progress_bar_updates)
 
     @trainer.on(Events.EPOCH_COMPLETED)
-    def log_training_results(trainer: Engine):
-        progress_bar.refresh()
-        training_evaluator.run(training_dataset_loader)
-        metrics = training_evaluator.state.metrics
-        print(f"\nTraining Results - Epoch: {trainer.state.epoch} - "
-              f"Avg accuracy: {metrics['accuracy']:.2f} - "
-              f"Avg loss: {metrics['cross-entropy']:.2f}")
-
-    @trainer.on(Events.EPOCH_COMPLETED)
     def log_validation_results(trainer: Engine):
+        progress_bar.refresh()
         validation_evaluator.run(validation_dataset_loader)
         metrics = validation_evaluator.state.metrics
         learning_rate_scheduler.step(metrics['accuracy'])
-        print(f"Validation Results - Epoch: {trainer.state.epoch} - "
+        print(f"\nValidation - Epoch: {trainer.state.epoch} - "
               f"Avg accuracy: {metrics['accuracy']:.2f} - "
               f"Avg loss: {metrics['cross-entropy']:.2f}")
         progress_bar.n = progress_bar.last_print_n = 0
@@ -144,9 +131,9 @@ def train_model(dataset_directory: str,
         return validation_accuracy
 
     checkpoint_directory = "checkpoints"
-    checkpoint_handler = ModelCheckpoint(checkpoint_directory, model_name, score_function=score_function, n_saved=2)
+    checkpoint_handler = ModelCheckpoint(checkpoint_directory, model_name, score_function=score_function)
     validation_evaluator.add_event_handler(Events.COMPLETED, checkpoint_handler, {'mymodel': model})
-    early_stopping_handler = EarlyStopping(patience=5, score_function=score_function, trainer=trainer)
+    early_stopping_handler = EarlyStopping(patience=10, score_function=score_function, trainer=trainer)
     validation_evaluator.add_event_handler(Events.COMPLETED, early_stopping_handler)
 
     trainer.run(training_dataset_loader, max_epochs=50)
@@ -154,24 +141,13 @@ def train_model(dataset_directory: str,
 
     print('Finished Training')
 
-    return
-
     print("Loading best model from check-point and testing...")
-    best_model = keras.models.load_model(best_model_path)
-
-    evaluation = best_model.evaluate_generator(test_data_generator, steps=test_steps_per_epoch)
-
-    print(best_model.metrics_names)
-    print("Loss : ", evaluation[0])
-    print("Accuracy : ", evaluation[1])
-    print("Error : ", 1 - evaluation[1])
-    end_time = time()
-    print("Execution time: %.1fs" % (end_time - start_time))
-
-    TrainingHistoryPlotter.plot_history(history,
-                                        "Results-{0}-{1}.png".format(training_configuration.name(),
-                                                                     datetime.date.today()),
-                                        show_plot=show_plot_after_training)
+    best_model_name = os.listdir(checkpoint_directory)[0]
+    best_model = torch.load(os.path.join(checkpoint_directory, best_model_name))  # type: Module
+    testing_evaluator = create_supervised_evaluator(best_model, metrics={'accuracy': Accuracy()}, device=device)
+    testing_evaluator.run(testing_dataset_loader)
+    metrics = testing_evaluator.state.metrics
+    print(f"\nTesting - Avg Accuracy {metrics['accuracy']:.2f}")
 
 
 if __name__ == "__main__":
