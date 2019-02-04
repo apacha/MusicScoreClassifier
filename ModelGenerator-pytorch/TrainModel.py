@@ -16,6 +16,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 from torchsummary import summary
 from torchvision.datasets import ImageFolder
+from torchvision.models import VGG, vgg11_bn, SqueezeNet
 from torchvision.transforms import transforms
 from tqdm import tqdm
 
@@ -23,6 +24,7 @@ from datasets.AdditionalDataset import AdditionalDataset
 from datasets.DatasetSplitter import DatasetSplitter
 from datasets.MuscimaDataset import MuscimaDataset
 from datasets.PascalVocDataset import PascalVocDataset
+from models.MobileNetV2 import MobileNetV2
 from models.SimpleNetwork import SimpleNetwork
 
 
@@ -55,7 +57,7 @@ def get_dataset_loaders(dataset_directory, minibatch_size) -> Tuple[DataLoader, 
         transforms.ToTensor()
     ])
 
-    number_of_workers = 6
+    number_of_workers = 8
     training_dataset = ImageFolder(root=os.path.join(dataset_directory, "training"), transform=data_transform)
     training_dataset_loader = DataLoader(training_dataset, batch_size=minibatch_size, shuffle=True,
                                          num_workers=number_of_workers)
@@ -69,10 +71,23 @@ def get_dataset_loaders(dataset_directory, minibatch_size) -> Tuple[DataLoader, 
     return training_dataset_loader, validation_dataset_loader, testing_dataset_loader
 
 
+def get_model_by_name(model_name) -> Module:
+    if model_name == "vgg":
+        return VGG(vgg11_bn().features, num_classes=2)
+    if model_name == "mobilenetv2":
+        return MobileNetV2(num_classes=2)
+    if model_name == "simple":
+        return SimpleNetwork()
+    if model_name == "squeezenet":
+        return SqueezeNet(version=1.1,num_classes=2)
+
+    raise Exception(f"Invalid model name: {model_name}.")
+
+
 def train_model(dataset_directory: str,
                 model_name: str,
                 delete_and_recreate_dataset_directory: bool,
-                minibatch_size=128):
+                minibatch_size=32):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     print("Downloading and extracting datasets...")
@@ -85,13 +100,11 @@ def train_model(dataset_directory: str,
 
     print("Training on dataset...")
 
-    model = SimpleNetwork()
+    model = get_model_by_name(model_name)
     model.to(device)
     print_model_architecture_and_parameters(model)
-
     training_dataset_loader, validation_dataset_loader, testing_dataset_loader = get_dataset_loaders(dataset_directory,
                                                                                                      minibatch_size)
-
     optimizer = Adadelta(model.parameters())
     learning_rate_scheduler = ReduceLROnPlateau(optimizer, mode='max', patience=8, verbose=True)
 
@@ -155,9 +168,9 @@ if __name__ == "__main__":
     parser.register("type", "bool", lambda v: v.lower() == "true")
     parser.add_argument("--dataset_directory", type=str, default="data",
                         help="The directory, that is used for storing the images during training")
-    parser.add_argument("--model_name", type=str, default="simple",
+    parser.add_argument("--model_name", type=str, default="squeezenet",
                         help="The model used for training the network. "
-                             "Currently allowed values are \'simple\', \'vgg\', \'xception\', \'mobilenetv2\'")
+                             "Currently allowed values are \'simple\', \'vgg\', \'squeezenet\', \'mobilenetv2\'")
     parser.add_argument("--delete_and_recreate_dataset_directory", dest="delete_and_recreate_dataset_directory",
                         action="store_true",
                         help="Whether to delete and recreate the dataset-directory (by downloading the appropriate "
