@@ -47,7 +47,7 @@ def print_model_architecture_and_parameters(network):
     summary(network, (3, 224, 224))
 
 
-def get_dataset_loaders(dataset_directory, minibatch_size) -> Tuple[DataLoader, DataLoader]:
+def get_dataset_loaders(dataset_directory, minibatch_size) -> Tuple[DataLoader, DataLoader, DataLoader]:
     data_transform = transforms.Compose([
         transforms.RandomRotation(10),
         transforms.Resize((224, 224)),
@@ -59,11 +59,14 @@ def get_dataset_loaders(dataset_directory, minibatch_size) -> Tuple[DataLoader, 
     training_dataset = ImageFolder(root=os.path.join(dataset_directory, "training"), transform=data_transform)
     training_dataset_loader = DataLoader(training_dataset, batch_size=minibatch_size, shuffle=True,
                                          num_workers=number_of_workers)
-    validation_dataset = ImageFolder(root=os.path.join(dataset_directory, "training"), transform=data_transform)
+    validation_dataset = ImageFolder(root=os.path.join(dataset_directory, "validation"), transform=data_transform)
     validation_dataset_loader = DataLoader(validation_dataset, batch_size=minibatch_size, shuffle=False,
                                            num_workers=number_of_workers)
+    testing_dataset = ImageFolder(root=os.path.join(dataset_directory, "test"), transform=data_transform)
+    testing_dataset_loader = DataLoader(testing_dataset, batch_size=minibatch_size, shuffle=False,
+                                        num_workers=number_of_workers)
 
-    return training_dataset_loader, validation_dataset_loader
+    return training_dataset_loader, validation_dataset_loader, testing_dataset_loader
 
 
 def train_model(dataset_directory: str,
@@ -86,7 +89,8 @@ def train_model(dataset_directory: str,
     model.to(device)
     print_model_architecture_and_parameters(model)
 
-    training_dataset_loader, validation_dataset_loader = get_dataset_loaders(dataset_directory, minibatch_size)
+    training_dataset_loader, validation_dataset_loader, testing_dataset_loader = get_dataset_loaders(dataset_directory,
+                                                                                                     minibatch_size)
 
     optimizer = Adadelta(model.parameters())
     cross_entropy_loss = CrossEntropyLoss()
