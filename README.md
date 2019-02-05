@@ -12,7 +12,7 @@ You might also be interested to check out my [follow-up work](https://github.com
 
 # Running the application
 This repository contains several scripts that can be used independently of each other. 
-Before running them, make sure that you have the necessary requirements installed. 
+Before running them, make sure that you have the necessary requirements installed. Note that there are two versions, depending on the Deep Learning framework you prefer: Tensorflow/Keras or PyTorch.
 
 ## Requirements
 
@@ -21,6 +21,11 @@ This application has been tested with the following versions, but older and newe
 - Python 3.6
 - Keras 2.2.4
 - Tensorflow 1.11.0 (or optionally tensorflow-gpu 1.11.0)
+
+or
+
+- Python 3.6
+- PyTorch 1.0
 
 Optional: If you want to print the graph of the model being trained, install [GraphViz for Windows](https://graphviz.gitlab.io/_pages/Download/Download_windows.html) via and add /bin to the PATH or run `sudo apt-get install graphviz` on Ubuntu (see https://github.com/fchollet/keras/issues/3210)
 
@@ -68,7 +73,6 @@ If you are using this dataset or the code from this repository, please consider 
   booktitle = {2017 16th IEEE International Conference on Machine Learning and Applications (ICMLA)},
   year      = {2017},
   pages     = {795--800},
-  month     = dec,
   doi       = {10.1109/ICMLA.2017.00-60},
 }
 ```
@@ -77,7 +81,7 @@ If you are using this dataset or the code from this repository, please consider 
 
 Published under MIT License,
 
-Copyright (c) 2018 [Alexander Pacha](http://alexanderpacha.com), [TU Wien](https://www.ims.tuwien.ac.at/people/alexander-pacha)
+Copyright (c) 2019 [Alexander Pacha](http://alexanderpacha.com), [TU Wien](https://www.ims.tuwien.ac.at/people/alexander-pacha)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
